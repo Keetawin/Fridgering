@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "738630038032",
+    "project_id": "fridgering",
+    "storage_bucket": "fridgering.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:738630038032:android:e58f05420aa9af4ce25095",
+        "android_client_info": {
+          "package_name": "com.example.fridgering"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "738630038032-141djugcbqnsaeptgi8f72rtr99rcs7l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPavZIDQFxOe54zWgU2_Kc7BVrn2RGpr0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "738630038032-141djugcbqnsaeptgi8f72rtr99rcs7l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
