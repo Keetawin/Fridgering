@@ -5,6 +5,9 @@ import './market/market.dart';
 import './profile/profile.dart';
 
 class Home extends StatefulWidget {
+  final String? userId; // Add this field
+
+  Home({this.userId});
   @override
   _HomeState createState() => _HomeState();
 }
@@ -12,16 +15,22 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int _currentIndex = 0; // Index of the selected tab
 
-  // Define the pages that correspond to each tab
-  final List<Widget> _pages = [
-    Center(
-      child: Text('Home Page'), // Replace this with your home page content
-    ),
-    RecipePage(), // Use the RecipePage class
-    FridgePage(), // Use the FridgePage class
-    MarketPage(), // Use the MarketPage class
-    ProfilePage(),
-  ];
+  late List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      Center(
+        child: Text(
+            'User ID: ${widget.userId ?? 'No User ID'}'), // Display the user ID
+      ),
+      RecipePage(), // Use the RecipePage class
+      FridgePage(), // Use the FridgePage class
+      MarketPage(), // Use the MarketPage class
+      ProfilePage(),
+    ];
+  }
 
   void _onTabTapped(int index) {
     setState(() {

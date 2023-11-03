@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import '../home.dart';
 
 class Auth extends StatefulWidget {
@@ -44,8 +45,9 @@ class _AuthState extends State<Auth> {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) =>
-                  Home()), // Assuming Home is the name of your Home class
+              builder: (context) => Home(
+                  userId:
+                      userId)), // Assuming Home is the name of your Home class
         );
 
         print('Google Sign-In Success: ${user.displayName}');
@@ -84,9 +86,7 @@ class _AuthState extends State<Auth> {
               margin: EdgeInsets.symmetric(horizontal: 40),
               width: double.infinity,
               child: TextButton(
-                onPressed: () {
-                  // Add your Facebook login logic here
-                },
+                onPressed: () {},
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
