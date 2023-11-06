@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
         } else if (snapshot.hasData) {
           User? user = snapshot.data; // Get the user object
           print(
-              'User is logged in: ${user?.uid}'); // Print the user's display name (replace with the relevant user data)
+              'User is logged in: ${user?.photoURL}'); // Print the user's display name (replace with the relevant user data)
           // The user is logged in, so navigate to the Home screen.
           return MaterialApp(
             debugShowCheckedModeBanner: false,
@@ -52,7 +52,10 @@ class MyApp extends StatelessWidget {
               primarySwatch: primaryColor,
               fontFamily: 'Poppins',
             ),
-            home: Home(userId: user?.uid), // Use the Home widget
+            home: Home(
+                userId: user?.uid,
+                userImage: user?.photoURL,
+                userName: user?.displayName), // Use the Home widget
           );
         } else {
           // The user is not logged in, so show the Onboarding screen.
