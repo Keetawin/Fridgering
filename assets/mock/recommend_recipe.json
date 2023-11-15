@@ -1,0 +1,25 @@
+{
+  "recipes": [
+    {
+      "imageUrl": "assets/images/pic2.jpg",
+      "tagAndTitle": "Omelet",
+      "timeToCook": 20,
+      "numIngredients": 5,
+      "tags": ["breakfast", "easy"]
+    },
+    {
+      "imageUrl": "assets/images/pic1.jpg",
+      "tagAndTitle": "Wagyu A5",
+      "timeToCook": 45,
+      "numIngredients": 8,
+      "tags": ["dinner", "luxury"]
+    },
+    {
+      "imageUrl": "assets/images/pic3.jpg",
+      "tagAndTitle": "Tom Yum",
+      "timeToCook": 30,
+      "numIngredients": 10,
+      "tags": ["soup", "spicy"]
+    }
+  ]
+}
