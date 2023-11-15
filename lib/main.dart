@@ -2,6 +2,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import './welcome/onboarding.dart';
 import './firebase_options.dart';
+import './home.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,6 +16,10 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  Future<User?> _checkLoginStatus() async {
+    return FirebaseAuth.instance.currentUser;
+  }
+
   @override
   Widget build(BuildContext context) {
     // Create a MaterialColor from a Color
@@ -32,13 +39,41 @@ class MyApp extends StatelessWidget {
       },
     );
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-          primarySwatch: primaryColor,
-          fontFamily: 'Poppins' // Use the custom MaterialColor
-          ),
-      home: Onbording(),
+    return FutureBuilder<User?>(
+      future: _checkLoginStatus(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator(); // You can show a loading indicator here.
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else if (snapshot.hasData) {
+          User? user = snapshot.data; // Get the user object
+          print(
+              'User is logged in: ${user?.photoURL}'); // Print the user's display name (replace with the relevant user data)
+          // The user is logged in, so navigate to the Home screen.
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              primarySwatch: primaryColor,
+              fontFamily: 'Poppins',
+            ),
+            home: Home(
+                userId: user?.uid,
+                userImage: user?.photoURL,
+                userName: user?.displayName), // Use the Home widget
+          );
+        } else {
+          // The user is not logged in, so show the Onboarding screen.
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+                primarySwatch: primaryColor,
+                fontFamily: 'Poppins',
+                scaffoldBackgroundColor: Colors.white),
+            home: Onbording(),
+          );
+        }
+      },
     );
   }
 }

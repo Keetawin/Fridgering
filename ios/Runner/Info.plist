@@ -8,9 +8,16 @@
         <key>CFBundleURLSchemes</key>
         <array>
             <string>com.googleusercontent.apps.738630038032-s822n34lj0cf3g2r0acud39c3837kvn1</string>
+			<string>fbApp-276074238169703</string>
         </array>
     </dict>
 	</array>
+	<key>FacebookAppID</key>
+	<string>276074238169703</string>
+	<key>FacebookClientToken</key>
+	<string>d62a688b93739e325e3248dad201c229</string>
+	<key>FacebookDisplayName</key>
+	<string>Fridgering</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
