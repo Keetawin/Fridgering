@@ -62,9 +62,9 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             theme: ThemeData(
-              primarySwatch: primaryColor,
-              fontFamily: 'Poppins',
-            ),
+                primarySwatch: primaryColor,
+                fontFamily: 'Poppins',
+                scaffoldBackgroundColor: Colors.white),
             home: Onbording(),
           );
         }

@@ -3,8 +3,9 @@ import './recipe/recipe.dart';
 import './fridge/fridge.dart';
 import './market/market.dart';
 import './profile/profile.dart';
-import './component/card.dart';
+import 'component/recipe_card.dart';
 import './component/fridge_card.dart';
+import 'dart:convert';
 
 class Home extends StatefulWidget {
   final String? userId;
@@ -20,6 +21,26 @@ class _HomeState extends State<Home> {
   int _currentIndex = 0; // Index of the selected tab
 
   late List<Widget> _pages;
+
+  List<List<String>> tagsList = [
+    ['Fried', 'Thai cuisine', 'Spicy'],
+    ['Hot', 'Japan cuisine', 'Soup'],
+    ['Hot', 'Soup'],
+    // เพิ่ม List ของ tag ในแต่ละ card ตามต้องการ
+  ];
+
+  List<int> timeToCook = [
+    20,
+    30,
+    40,
+    // เพิ่มเวลาในการทำอาหารของแต่ละ card ตามต้องการ
+  ];
+
+  List<int> numIngredients = [
+    5,
+    6,
+    7,
+  ];
 
   List<String> imageUrls = [
     'assets/images/pic2.jpg',
@@ -38,16 +59,19 @@ class _HomeState extends State<Home> {
   List<String> fridgeItemTitles = [
     'Potato',
     'Egg',
+    'Egg',
     // Add more fridge item titles as needed
   ];
 
   List<String> fridgeItemImages = [
     'assets/images/potato.jpg',
     'assets/images/egg.jpg',
+    'assets/images/egg.jpg',
     // Add more fridge item images as needed
   ];
 
   List<String> fridgeItemExpirationDates = [
+    '31/08/21',
     '31/08/21',
     '31/08/21',
     // Add more expiration dates as needed
@@ -143,6 +167,9 @@ class _HomeState extends State<Home> {
                               index: index,
                               imageUrl: imageUrls[index],
                               tagAndTitle: tagsAndTitles[index],
+                              tags: tagsList[index],
+                              timeToCook: timeToCook[index],
+                              numIngredients: numIngredients[index],
                             ),
                           );
                         },
@@ -170,7 +197,7 @@ class _HomeState extends State<Home> {
                             ),
                           ),
                           Text(
-                            '9 items',
+                            '${fridgeItemTitles.length} items',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
@@ -212,6 +239,26 @@ class _HomeState extends State<Home> {
       MarketPage(), // Use the MarketPage class
       ProfilePage(),
     ];
+    _loadRecipes();
+  }
+
+  void _loadRecipes() async {
+    // Load data from mock.json and append to existing lists
+    String data = await DefaultAssetBundle.of(context)
+        .loadString('assets/mock/recommend_recipe.json');
+    Map<String, dynamic> jsonData = json.decode(data);
+
+    List<dynamic> recipesData = jsonData['recipes'];
+
+    List<String> newImageUrls =
+        recipesData.map((json) => json['imageUrl']).cast<String>().toList();
+    List<String> newTagsAndTitles =
+        recipesData.map((json) => json['tagAndTitle']).cast<String>().toList();
+
+    setState(() {
+      imageUrls.addAll(newImageUrls);
+      tagsAndTitles.addAll(newTagsAndTitles);
+    });
   }
 
   void _onTabTapped(int index) {

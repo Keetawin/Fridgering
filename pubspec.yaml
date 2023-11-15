@@ -73,6 +73,8 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/images/
+    - assets/mock/
+    - assets/mock/recommend_recipe.json
     - fonts/
     - assets/images/onboard1.png
     - assets/images/onboard2.png

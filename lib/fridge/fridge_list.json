@@ -1,0 +1,14 @@
+{
+  "fridgeItems": [
+    {
+      "title": "Potato",
+      "imageUrl": "assets/images/potato.jpg",
+      "expirationDate": "31/08/21"
+    },
+    {
+      "title": "Egg",
+      "imageUrl": "assets/images/egg.jpg",
+      "expirationDate": "31/08/21"
+    }
+  ]
+}
