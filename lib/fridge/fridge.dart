@@ -1,14 +1,346 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'ingredient.dart';
 
-class FridgePage extends StatelessWidget {
+class FridgePage extends StatefulWidget {
+  const FridgePage({Key? key}) : super(key: key);
+
+  @override
+  _FridgePageState createState() => _FridgePageState();
+}
+class _FridgePageState extends State<FridgePage> {
+  String selectedFilter = 'all';
+
+  List<Map<String, String>> allIngredients = [
+  {
+    'quantity': '2 PCS',
+    'image': 'assets/images/pic1.jpg',
+    'name': 'Carrot',
+    'category': 'vegetable',
+    'datebuy': '10/11/23'
+  },
+  {
+    'quantity': '4 PCS',
+    'image': 'assets/images/pic2.jpg',
+    'name': 'Apple',
+    'category': 'fruit',
+    'datebuy': '11/11/23'
+  },
+  {
+    'quantity': '600 G',
+    'image': 'assets/images/pic3.jpg',
+    'name': 'Chicken',
+    'category': 'meat',
+    'datebuy': '9/11/23'
+  },
+  {
+    'quantity': '600 G',
+    'image': 'assets/images/pic1.jpg',
+    'name': 'Tomato',
+    'category': 'vegetable',
+    'datebuy': '12/11/23'
+  },
+  // Add more ingredients as needed
+];
+
+
+  List<Map<String, String>> getFilteredIngredients() {
+  if (selectedFilter == 'all') {
+    return allIngredients;
+  } else {
+    List<Map<String, String>> filteredList =
+        allIngredients.where((ingredient) => ingredient['category'] == selectedFilter).toList();
+    return filteredList;
+  }
+}
+
+
   @override
   Widget build(BuildContext context) {
-    return Center(
+    print('Selected Filter: $selectedFilter');
+  print('Filtered Ingredients: ${getFilteredIngredients()}');
+    return Scaffold(
+      body: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 32.0,
+                vertical: 60.0,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: const [
+                  Text(
+                    'Fridge',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24.0,
+                    ),  
+                  ),
+                  Icon(
+                    Icons.notifications,
+                    color: Colors.black,
+                    size: 40.0,
+                  )
+                ],
+              ),
+            ),
+            Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32.0,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Ingredients',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16.0,
+                      ),  
+                    ),
+                    Text(
+                      '${allIngredients.length} items',
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        color: Colors.grey
+                      ),  
+                    ),
+                  ],
+                ),
+            ),
+            SizedBox(height: 20.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                buildFilterBox('All', 'all'),
+                buildFilterBox('Vegetable', 'vegetable'),
+                buildFilterBox('Fruit', 'fruit'),
+                buildFilterBox('Meat', 'meat'),
+              ],
+            ),
+            SizedBox(height: 20.0),
+            Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 20.0,
+                  mainAxisSpacing: 20.0,
+                  childAspectRatio: 148 / 253,
+                ),
+                
+                itemCount: getFilteredIngredients().length,
+                itemBuilder: (context, index) {
+                  return buildIngredientCard(getFilteredIngredients()[index]);
+                  
+                },
+              ),
+            ),
+            ),
+          ],
+      ),
+    );
+  }
+
+  Widget buildFilterBox(String text, String filter) {
+    bool isSelected = selectedFilter == filter;
+    ThemeData theme = Theme.of(context);
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedFilter = filter;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+                horizontal: 20.0,
+                vertical: 15.0,
+              ),
+        decoration: BoxDecoration(
+          color: isSelected ? theme.primaryColor : Colors.white,
+          borderRadius: BorderRadius.circular(15.0),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 3,
+                    blurRadius: 7,
+                    offset: Offset(0, 3),
+                  ),
+                ]
+              : [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5), // Adjust shadow color
+                    spreadRadius: 2, // Increase or decrease the spread
+                    blurRadius: 5, // Increase or decrease the blur
+                    offset: Offset(0, 2),
+                  ),
+                ],
+        ),
+        child: Text(
+          text,
+          style: TextStyle(
+            color: isSelected ? Colors.white : theme.primaryColor,
+            fontWeight: FontWeight.normal,
+            fontSize: 14.0,
+          ),
+        ),
+      ),
+    );
+  }
+  Widget buildIngredientCard(Map<String, String> ingredient) {
+    DateTime dateBuy = DateFormat('dd/MM/yy').parse(ingredient['datebuy'] ?? '', true);
+
+    DateTime expirationDate = dateBuy.add(Duration(days: 7));
+
+    DateTime currentDate = DateTime.now();
+    int daysLeft = expirationDate.difference(currentDate).inDays;
+    
+    return GestureDetector(
+    onTap: () {
+      // Navigate to the IngredientPage when the box is tapped
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => IngredientPage(ingredient: ingredient),
+        ),
+      );
+    },
+
+    child: Container(
+      height: 253,
+      width: 148,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16.0),
+          boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(height: 15.0),
+            QuantityBox(quantity: ingredient['quantity'] ?? 'Unknown'),
+
+            SizedBox(height: 10.0),
+            Image.asset(
+              ingredient['image'] ?? 'assets/images/default_image.jpg',
+              height: 120,
+              fit: BoxFit.cover,
+            ),
+
+            SizedBox(height: 10.0),
+            ExpirationLifeBar(daysLeft: daysLeft, height: 5.0, width: 120.0),
+
+            SizedBox(height: 8.0),
+          
+            Text(
+              '${daysLeft >= 0 ? daysLeft : 'Expired'} DAY LEFT',
+              style: TextStyle(
+                fontSize: 14.0,
+                fontWeight: FontWeight.normal,
+                color: Colors.grey,
+              ),
+            ),
+
+            SizedBox(height: 8.0),
+            Text(
+              ingredient['name'] ?? 'Unknown',
+              style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            SizedBox(height: 8.0),
+          
+            Text(
+              ingredient['datebuy'] !,
+              style: TextStyle(
+                fontSize: 14.0,
+                fontWeight: FontWeight.normal,
+                color: Colors.grey,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+    );
+  }
+}
+
+class ExpirationLifeBar extends StatelessWidget {
+  final int daysLeft;
+  final double height;
+  final double width;
+
+  ExpirationLifeBar({required this.daysLeft, this.height = 8.0, this.width = 100.0});
+
+  @override
+  Widget build(BuildContext context) {
+    double lifePercentage = daysLeft >= 0 ? (daysLeft / 7) : 0.0;
+    Color lifeBarColor = _getLifeBarColor();
+
+    return Container(
+      width: width,
+      height: height,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(height / 2), // Make it circular
+        child: LinearProgressIndicator(
+          value: lifePercentage,
+          backgroundColor: Colors.grey,
+          valueColor: AlwaysStoppedAnimation<Color>(lifeBarColor),
+          minHeight: height,
+        ),
+      ),
+    );
+  }
+
+  Color _getLifeBarColor() {
+    if (daysLeft >= 5 && daysLeft <= 7) {
+      return Colors.green;
+    } else if (daysLeft >= 3 && daysLeft <= 4) {
+      return Colors.orange;
+    } else if (daysLeft >= 1 && daysLeft <= 2) {
+      return Colors.red;
+    } else {
+      return Colors.grey; // You can set this to any color for an empty state
+    }
+  }
+}
+
+class QuantityBox extends StatelessWidget {
+  final String quantity;
+
+  const QuantityBox({Key? key, required this.quantity}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
+    
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+      decoration: BoxDecoration(
+        color: theme.primaryColor, // Adjust color as needed
+        borderRadius: BorderRadius.circular(30.0),
+      ),
       child: Text(
-        'Fridge Page Content',
+        '$quantity',
         style: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
+          fontSize: 14.0,
+          fontWeight: FontWeight.normal,
+          color: Colors.white
         ),
       ),
     );
