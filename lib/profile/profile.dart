@@ -190,7 +190,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       ],
                     ),
                     SizedBox(height: 16),
-                    FridgeList(
+                    Padding(
+                      padding: EdgeInsets.only(right: 10),
+                    child:FridgeList(
                       fridgeItems: List.generate(
                         fridgeItemTitles.length,
                         (index) => FridgeListItem(
@@ -201,6 +203,9 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                     ),
+                    
+                    ),
+                    
                     SizedBox(height: 16),
                   ],
                 ),
@@ -220,7 +225,7 @@ class FridgeList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 180, // Adjust the height as needed
+      height: 200, // Adjust the height as needed
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: fridgeItems.length,

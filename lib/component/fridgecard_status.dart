@@ -22,74 +22,78 @@ class FridgeListItem extends StatelessWidget {
     DateTime currentDate = DateTime.now();
     int daysLeft = expirationDate.difference(currentDate).inDays;
 
-    return Container(
-      height: 200,
-      width: 140,
+    return Padding(
+      padding: EdgeInsets.only(left: 8, right: 8,top: 8,bottom: 8), // Add padding values here
       child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16.0),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(height: 10.0),
-            QuantityBox(quantity: quantity),
-
-            SizedBox(height: 5.0),
-            Image.asset(
-              imageUrl,
-              height: 50,
-              fit: BoxFit.cover,
-            ),
-
-            SizedBox(height: 5.0),
-            ExpirationLifeBar(daysLeft: daysLeft, height: 5.0, width: 120.0),
-
-            SizedBox(height: 4.0),
-
-            Text(
-              '${daysLeft >= 0 ? daysLeft : 'Expired'} DAY LEFT',
-              style: TextStyle(
-                fontSize: 12.0,
-                fontWeight: FontWeight.normal,
-                color: Colors.grey,
+        height: 200,
+        width: 140,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16.0),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: Offset(0, 1),
               ),
-            ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(height: 10.0),
+              QuantityBox(quantity: quantity),
 
-            SizedBox(height: 4.0),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 12.0,
-                fontWeight: FontWeight.bold,
+              SizedBox(height: 5.0),
+              Image.asset(
+                imageUrl,
+                height: 50,
+                fit: BoxFit.cover,
               ),
-            ),
 
-            SizedBox(height: 4.0),
+              SizedBox(height: 5.0),
+              ExpirationLifeBar(daysLeft: daysLeft, height: 5.0, width: 120.0),
 
-            Text(
-              dateBuy,
-              style: TextStyle(
-                fontSize: 14.0,
-                fontWeight: FontWeight.normal,
-                color: Colors.grey,
+              SizedBox(height: 4.0),
+
+              Text(
+                '${daysLeft >= 0 ? daysLeft : 'Expired'} DAY LEFT',
+                style: TextStyle(
+                  fontSize: 12.0,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.grey,
+                ),
               ),
-            ),
-          ],
+
+              SizedBox(height: 4.0),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 12.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              SizedBox(height: 4.0),
+
+              Text(
+                dateBuy,
+                style: TextStyle(
+                  fontSize: 14.0,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.grey,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
+
 
 class ExpirationLifeBar extends StatelessWidget {
   final int daysLeft;
