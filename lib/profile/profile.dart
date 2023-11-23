@@ -119,7 +119,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        'Recipes you can make',
+                        'Bookmarked Recipe',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -163,49 +163,55 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               Container(
                 // Fridge section
-                padding: EdgeInsets.symmetric(horizontal: 36),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 20),
                     Row(
+                      // Add padding to the Row
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          'Fridge List',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black,
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 36),
+                          child: Text(
+                            'Fridge List',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black,
+                            ),
                           ),
                         ),
-                        Text(
-                          '${fridgeItemTitles.length} items',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black,
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 36),
+                          child: Text(
+                            '${fridgeItemTitles.length} items',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey,
+                            ),
                           ),
                         ),
+                        
                       ],
                     ),
                     SizedBox(height: 16),
                     Padding(
-                      padding: EdgeInsets.only(right: 10),
-                    child:FridgeList(
-                      fridgeItems: List.generate(
-                        fridgeItemTitles.length,
-                        (index) => FridgeListItem(
-                          title: fridgeItemTitles[index],
-                          quantity: fridgeItemQuantity[index],
-                          imageUrl: fridgeItemImages[index],
-                          dateBuy: fridgeItemDates[index],
+                      // Add padding to the FridgeList
+                      padding: EdgeInsets.only(left: 36),
+                      child: FridgeList(
+                        fridgeItems: List.generate(
+                          fridgeItemTitles.length,
+                          (index) => FridgeListItem(
+                            title: fridgeItemTitles[index],
+                            quantity: fridgeItemQuantity[index],
+                            imageUrl: fridgeItemImages[index],
+                            dateBuy: fridgeItemDates[index],
+                          ),
                         ),
                       ),
                     ),
-                    
-                    ),
-                    
                     SizedBox(height: 16),
                   ],
                 ),
