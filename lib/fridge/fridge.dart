@@ -227,13 +227,7 @@ class _FridgePageState extends State<FridgePage> {
 
     return GestureDetector(
         onTap: () {
-          // Navigate to the IngredientPage when the box is tapped
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => IngredientPage(ingredient: ingredient),
-            ),
-          );
+          _showEditModal(context, ingredient);
         },
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 12),
@@ -371,4 +365,118 @@ class QuantityBox extends StatelessWidget {
       ),
     );
   }
+}
+
+void _showEditModal(BuildContext context, Map<String, String> ingredient) {
+  String quantity = ingredient['quantity'] ?? '';
+  List<String> parts = quantity.split(' ');
+
+  TextEditingController quantityController =
+      TextEditingController(text: parts.isNotEmpty ? parts[0] : '');
+  String selectedUnit = parts.length > 1 ? parts[1] : 'PCS'; // Default value
+  bool isDeleting = false;
+
+  showModalBottomSheet(
+    context: context,
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return Container(
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Edit Ingredient',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 20),
+                TextField(
+                  controller: quantityController,
+                  onChanged: (value) {
+                    setState(() {
+                      // Update the variable isDeleting based on the text field content
+                      isDeleting = value == '0';
+                    });
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Quantity',
+                    suffixText: selectedUnit,
+                  ),
+                ),
+                SizedBox(height: 20),
+                DropdownButtonFormField<String>(
+                  value: selectedUnit,
+                  onChanged: (String? newValue) {
+                    if (newValue != null) {
+                      setState(() {
+                        selectedUnit = newValue;
+                      });
+                    }
+                  },
+                  items: <String>['PCS', 'G', 'KG', 'L']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
+                SizedBox(height: 28),
+                ElevatedButton(
+                    onPressed: () {
+                      if (isDeleting || quantityController.text.isEmpty) {
+                        // Your logic to delete the ingredient
+                      } else {
+                        // Your logic to save the edited quantity and unit
+                      }
+
+                      // Add logic to update the quantity and unit in your data model
+
+                      Navigator.pop(context); // Close the modal
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: isDeleting || quantityController.text.isEmpty
+                          ? Color(0xFFFF6464)
+                          : Theme.of(context)
+                              .primaryColor, // Change colors as needed
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                            20.0), // Adjust the border radius
+                      ),
+                      textStyle: TextStyle(
+                        fontSize: 18.0, // Adjust the font size
+                      ),
+                    ),
+                    child: Container(
+                      margin:
+                          EdgeInsets.symmetric(horizontal: 36, vertical: 18),
+                      width: double.infinity,
+                      alignment: Alignment.center,
+                      child: Text(
+                        isDeleting || quantityController.text.isEmpty
+                            ? 'Delete'
+                            : 'Save',
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            fontFamily: 'Poppins'),
+                      ),
+                    )),
+                SizedBox(height: 28),
+              ],
+            ),
+          );
+        },
+      );
+    },
+  );
 }

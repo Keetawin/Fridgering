@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../dietary/dietary.dart';
 
 import '../home.dart';
 
@@ -35,22 +38,36 @@ class _AuthState extends State<Auth> {
           await FirebaseAuth.instance.signInWithCredential(credential);
 
       final User? user = authResult.user;
+
       if (user != null) {
         // Successfully signed in with Google
-        setState(() {
-          userId = user.uid; // Store the user's ID
-        });
 
-        // Route to the Home screen
-        Navigator.push(
-          context,
-          MaterialPageRoute(
+        // Make API request to check user data
+        final response = await http
+            .get(Uri.parse('https://fridgeringapi.fly.dev/user/${user.uid}'));
+        final responseData = json.decode(response.body);
+
+        if (response.statusCode == 200 && responseData['status'] == 'OK') {
+          // User data exists, navigate to Home
+          Navigator.push(
+            context,
+            MaterialPageRoute(
               builder: (context) => Home(
-                    userId: userId,
-                    userImage: user.photoURL,
-                    userName: user.displayName,
-                  )), // Assuming Home is the name of your Home class
-        );
+                userId: user.uid,
+                userImage: user.photoURL,
+                userName: responseData['data']['name'],
+              ),
+            ),
+          );
+        } else {
+          // User data not found, navigate to Dietary
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DietaryPage(),
+            ),
+          );
+        }
 
         print('Google Sign-In Success: ${user.displayName}');
       } else {
