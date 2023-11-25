@@ -68,7 +68,7 @@ class _AuthState extends State<Auth> {
               builder: (context) => DietaryPage(
                 userId: user.uid,
                 userImage: user.photoURL,
-                userName: responseData['data']['name'],
+                userName: user.displayName,
                 userEmail: user.email,
               ),
             ),

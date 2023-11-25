@@ -5,7 +5,6 @@ import './profile/profile.dart';
 import 'component/recipecard_bookmark.dart';
 import './component/fridgecard_status.dart';
 import './notification/notification.dart';
-import './market/market.dart';
 import 'dart:convert';
 
 class Home extends StatefulWidget {
