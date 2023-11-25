@@ -91,6 +91,7 @@ class _DietaryPageState extends State<DietaryPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 24.0),
+        child: SingleChildScrollView(
         child: Column(
           children: [
             Row(
@@ -128,17 +129,15 @@ class _DietaryPageState extends State<DietaryPage> {
                 controller: expireNotificationController,
                 keyboardType: TextInputType.number,
                 inputFormatters: [
-                  // Allow only digits
-                  LengthLimitingTextInputFormatter(
-                      1), // Limit length to 1 digit
-                  RangeTextInputFormatter(
-                      min: 1, max: 7), // Custom formatter for range
+                  // Allow only digits and limit length to 1 digit
+                  LengthLimitingTextInputFormatter(1),
                 ],
                 decoration: InputDecoration(
                   labelText: 'Expire Notification (1-7 days)',
                 ),
               ),
             ),
+
             SizedBox(height: 16),
             Container(
               height: 60,
@@ -165,7 +164,7 @@ class _DietaryPageState extends State<DietaryPage> {
             )
           ],
         ),
-      ),
+      ),),
     );
   }
 
