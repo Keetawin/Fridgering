@@ -4,34 +4,48 @@ import './welcome/onboarding.dart';
 import './firebase_options.dart';
 import './home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions
-    .currentPlatform,
+    options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  Future<User?> _checkLoginStatus() async {
-    return FirebaseAuth.instance.currentUser;
+  Future<Map<String, dynamic>?> _checkLoginStatus() async {
+    // Get the current user ID from Firebase
+    String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+
+    final response = await http.get(
+      Uri.parse('https://fridgeringapi.fly.dev/user/$userId'),
+    );
+
+    if (response.statusCode == 200) {
+      // User data is available
+      return jsonDecode(response.body);
+    } else if (response.statusCode == 404) {
+      // User not found
+      return null;
+    } else {
+      throw Exception('Failed to check login status');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Create a MaterialColor from a Color
     MaterialColor primaryColor = MaterialColor(
-      0xFF3D77FC, // Primary color's hexadecimal value
+      0xFF3D77FC,
       <int, Color>{
-        50: Color(0xFF3D77FC), // You can customize shades if needed
+        50: Color(0xFF3D77FC),
         100: Color(0xFF3D77FC),
         200: Color(0xFF3D77FC),
         300: Color(0xFF3D77FC),
         400: Color(0xFF3D77FC),
-        500: Color(0xFF3D77FC), // Your primary color
+        500: Color(0xFF3D77FC),
         600: Color(0xFF3D77FC),
         700: Color(0xFF3D77FC),
         800: Color(0xFF3D77FC),
@@ -39,39 +53,43 @@ class MyApp extends StatelessWidget {
       },
     );
 
-    return FutureBuilder<User?>(
+    return FutureBuilder<Map<String, dynamic>?>(
       future: _checkLoginStatus(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator(); // You can show a loading indicator here.
+          return CircularProgressIndicator();
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
-        } else if (snapshot.hasData) {
-          User? user = snapshot.data; // Get the user object
-          print(
-              'User is logged in: ${user?.photoURL}'); // Print the user's display name (replace with the relevant user data)
-          // The user is logged in, so navigate to the Home screen.
-          return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            theme: ThemeData(
-              primarySwatch: primaryColor,
-              fontFamily: 'Poppins',
-            ),
-            home: Home(
-                userId: user?.uid,
-                userImage: user?.photoURL,
-                userName: user?.displayName), // Use the Home widget
-          );
         } else {
-          // The user is not logged in, so show the Onboarding screen.
-          return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            theme: ThemeData(
+          final userData = snapshot.data;
+
+          if (userData == null) {
+            // User not found, navigate to Onboarding
+            return MaterialApp(
+              debugShowCheckedModeBanner: false,
+              theme: ThemeData(
                 primarySwatch: primaryColor,
                 fontFamily: 'Poppins',
-                scaffoldBackgroundColor: Colors.white),
-            home: Onbording(),
-          );
+                scaffoldBackgroundColor: Colors.white,
+              ),
+              home: Onbording(),
+            );
+          } else {
+            // User found, navigate to Home
+            return MaterialApp(
+              debugShowCheckedModeBanner: false,
+              theme: ThemeData(
+                primarySwatch: primaryColor,
+                fontFamily: 'Poppins',
+                scaffoldBackgroundColor: Colors.white,
+              ),
+              home: Home(
+                userId: userData['userID'],
+                userImage: userData['data']['image'],
+                userName: userData['data']['name'],
+              ),
+            );
+          }
         }
       },
     );
