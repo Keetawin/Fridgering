@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import './menu.dart';
+import './menu2.dart';
 import '../notification/notification.dart';
 import 'package:standard_searchbar/standard_searchbar.dart';
 
@@ -9,6 +9,7 @@ class RecipePage extends StatefulWidget {
   final List<List<String>> tagsList; // Define tagsList
   final List<int> timeToCook; // Define timeToCook
   final List<int> numIngredients; // Define numIngredients
+  final bool isBookmarked;
 
   RecipePage({
     required this.imageUrls,
@@ -16,6 +17,7 @@ class RecipePage extends StatefulWidget {
     required this.tagsList,
     required this.timeToCook,
     required this.numIngredients,
+    required this.isBookmarked,
   });
 
   @override
@@ -44,6 +46,7 @@ class _RecipePageState extends State<RecipePage> {
           tags: widget.tagsList[index],
           timeToCook: widget.timeToCook[index],
           numIngredients: widget.numIngredients[index],
+          isBookmarked: widget.isBookmarked,
         ),
       ),
     );

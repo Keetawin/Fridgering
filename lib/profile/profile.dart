@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../component/fridgecard_status.dart';
+import '../component/fridge_card.dart';
 import '../component/recipecard_bookmark.dart';
 import '../auth/setting.dart';
 
@@ -41,6 +41,8 @@ class _ProfilePageState extends State<ProfilePage> {
     'assets/images/egg.jpg'
   ];
   List<String> fridgeItemDates = ['31/08/21', '31/08/21', '31/08/21'];
+
+  List<String> fridgeItemExpirationDates = ['31/12/23', '31/12/23', '31/12/23'];
 
   void toggleBookmark(int index) {
     setState(() {
@@ -212,9 +214,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         fridgeItemTitles.length,
                         (index) => FridgeListItem(
                           title: fridgeItemTitles[index],
-                          quantity: fridgeItemQuantity[index],
                           imageUrl: fridgeItemImages[index],
-                          dateBuy: fridgeItemDates[index],
                         ),
                       ),
                     ),
@@ -238,7 +238,7 @@ class FridgeList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 200, // Adjust the height as needed
+      height: 180, // Adjust the height as needed
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: fridgeItems.length,

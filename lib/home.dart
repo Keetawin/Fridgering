@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import './recipe/recipe.dart';
 import './fridge/fridge.dart';
 import './profile/profile.dart';
-import 'component/recipe_card.dart';
-import './component/fridge_card.dart';
+import 'component/recipecard_bookmark.dart';
+import './component/fridgecard_status.dart';
 import './notification/notification.dart';
 import './market/market.dart';
 import 'dart:convert';
@@ -73,6 +73,12 @@ class _HomeState extends State<Home> {
     // Add more fridge item titles as needed
   ];
 
+  List<String> fridgeItemQuantity = [
+    '2 PCS',
+    '3 PCS',
+    '1PCS'
+  ];
+
   List<String> fridgeItemImages = [
     'assets/images/potato.jpg',
     'assets/images/egg.jpg',
@@ -80,12 +86,20 @@ class _HomeState extends State<Home> {
     // Add more fridge item images as needed
   ];
 
+  List<String> fridgeItemDates = [
+    '25/11/23',
+    '20/11/23',
+    '21/11/23'
+  ];
+
   List<String> fridgeItemExpirationDates = [
-    '31/08/21',
-    '31/08/21',
-    '31/08/21',
+    '29/11/23',
+    '27/11/23',
+    '27/11/23',
     // Add more expiration dates as needed
   ];
+
+  List<bool> isBookmarked = [true, false, true];
 
   @override
   void initState() {
@@ -185,6 +199,12 @@ class _HomeState extends State<Home> {
                               tags: tagsList[index],
                               timeToCook: timeToCook[index],
                               numIngredients: numIngredients[index],
+                              isBookmarked: isBookmarked[index],
+                              onTap: () {
+                              setState(() {
+                                
+                              });
+                            },
                             ),
                           );
                         },
@@ -216,7 +236,7 @@ class _HomeState extends State<Home> {
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
-                              color: Colors.black,
+                              color: Colors.grey,
                             ),
                           ),
                         ]),
@@ -235,8 +255,10 @@ class _HomeState extends State<Home> {
                         fridgeItemTitles.length,
                         (index) => FridgeListItem(
                           title: fridgeItemTitles[index],
+                          quantity: fridgeItemQuantity[index],
                           imageUrl: fridgeItemImages[index],
-                          expirationDate: fridgeItemExpirationDates[index],
+                          dateBuy: fridgeItemDates[index],
+                          expireDate:fridgeItemExpirationDates[index],
                         ),
                       ),
                     ),
@@ -255,6 +277,7 @@ class _HomeState extends State<Home> {
         tagsList: tagsList,
         timeToCook: timeToCook,
         numIngredients: numIngredients,
+        isBookmarked: false,
       ), // Use the RecipePage class
       FridgePage(), // Use the FridgePage class
       ProfilePage(
@@ -329,7 +352,7 @@ class FridgeList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 180, // Adjust the height as needed
+      height: 200, // Adjust the height as needed
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: fridgeItems.length,

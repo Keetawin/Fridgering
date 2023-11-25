@@ -6,21 +6,24 @@ class FridgeListItem extends StatelessWidget {
   final String quantity;
   final String imageUrl;
   final String dateBuy;
+  final String expireDate;
 
   FridgeListItem({
     required this.title,
     required this.quantity,
     required this.imageUrl,
     required this.dateBuy,
+    required this.expireDate,
   });
 
   @override
   Widget build(BuildContext context) {
     DateTime dateBuyDateTime = DateFormat('dd/MM/yy').parse(dateBuy, true);
-    DateTime expirationDate = dateBuyDateTime.add(Duration(days: 7));
+    DateTime expirationDate = DateFormat('dd/MM/yy').parse(expireDate, true);
 
     DateTime currentDate = DateTime.now();
     int daysLeft = expirationDate.difference(currentDate).inDays;
+    int period = expirationDate.difference(dateBuyDateTime).inDays;
 
     return Padding(
       padding: EdgeInsets.only(left: 8, right: 8,top: 8,bottom: 8), // Add padding values here
@@ -54,7 +57,7 @@ class FridgeListItem extends StatelessWidget {
               ),
 
               SizedBox(height: 5.0),
-              ExpirationLifeBar(daysLeft: daysLeft, height: 5.0, width: 120.0),
+              ExpirationLifeBar(daysLeft: daysLeft, height: 5.0, width: 120.0, period: period),
 
               SizedBox(height: 4.0),
 
@@ -79,7 +82,7 @@ class FridgeListItem extends StatelessWidget {
               SizedBox(height: 4.0),
 
               Text(
-                dateBuy,
+                expireDate,
                 style: TextStyle(
                   fontSize: 14.0,
                   fontWeight: FontWeight.normal,
@@ -99,13 +102,14 @@ class ExpirationLifeBar extends StatelessWidget {
   final int daysLeft;
   final double height;
   final double width;
+  final int period;
 
-  ExpirationLifeBar({required this.daysLeft, this.height = 8.0, this.width = 100.0});
+  ExpirationLifeBar({required this.daysLeft, this.height = 8.0, this.width = 100.0, required this.period});
 
   @override
   Widget build(BuildContext context) {
-    double lifePercentage = daysLeft >= 0 ? (daysLeft / 7) : 0.0;
-    Color lifeBarColor = _getLifeBarColor();
+    double lifePercentage = daysLeft >= 0 ? ((daysLeft / period)) : 0.0; // Calculate the percentage of time elapsed
+    Color lifeBarColor = _getLifeBarColor(lifePercentage);
 
     return Container(
       width: width,
@@ -122,12 +126,12 @@ class ExpirationLifeBar extends StatelessWidget {
     );
   }
 
-  Color _getLifeBarColor() {
-    if (daysLeft >= 5 && daysLeft <= 7) {
+  Color _getLifeBarColor(double percentage) {
+    if (1 > percentage && percentage >= 0.6) {
       return Colors.green;
-    } else if (daysLeft >= 3 && daysLeft <= 4) {
+    } else if (0.6 > percentage && percentage >= 0.3) {
       return Colors.orange;
-    } else if (daysLeft >= 1 && daysLeft <= 2) {
+    } else if (0.3 > percentage && percentage >= 0.0) {
       return Colors.red;
     } else {
       return Colors.grey; // You can set this to any color for an empty state

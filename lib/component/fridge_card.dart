@@ -1,54 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class FridgeListItem extends StatelessWidget {
   final String title;
   final String imageUrl;
-  final String expirationDate;
 
   FridgeListItem({
     required this.title,
     required this.imageUrl,
-    required this.expirationDate,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 160, // Adjust the width as needed
-      margin: EdgeInsets.only(right: 12), // Add spacing between items
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 160, // Adjust the width as needed
-            height: 120, // Adjust the height as needed
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12.0),
-              border: Border.all(
-                color: Colors.grey.shade300,
-                width: 0.5,
+    return Padding(
+      padding: EdgeInsets.only(left: 8, right: 8,top: 8,bottom: 8), // Add padding values here
+      child: Container(
+        height: 200,
+        width: 140,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16.0),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: Offset(0, 1),
               ),
-              image: DecorationImage(
-                image: AssetImage(imageUrl),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(height: 10.0),
+              Image.asset(
+                imageUrl,
+                height: 100,
                 fit: BoxFit.cover,
               ),
-            ),
+
+              SizedBox(height: 10.0),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
           ),
-          SizedBox(height: 10),
-          Text(
-            title,
-            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-          ),
-          SizedBox(height: 4),
-          Text(
-            expirationDate,
-            style: TextStyle(
-              color: Colors.grey,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
