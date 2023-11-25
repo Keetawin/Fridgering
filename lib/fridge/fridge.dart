@@ -19,28 +19,32 @@ class _FridgePageState extends State<FridgePage> {
       'image': 'assets/images/pic1.jpg',
       'name': 'Carrot',
       'category': 'vegetable',
-      'datebuy': '20/12/23'
+      'datebuy': '20/12/23',
+      'expiredate': '17/11/23'
     },
     {
       'quantity': '4 PCS',
       'image': 'assets/images/pic2.jpg',
       'name': 'Apple',
       'category': 'fruit',
-      'datebuy': '11/11/23'
+      'datebuy': '11/11/23',
+      'expiredate': '17/11/23'
     },
     {
       'quantity': '600 G',
       'image': 'assets/images/pic3.jpg',
       'name': 'Chicken',
       'category': 'meat',
-      'datebuy': '9/11/23'
+      'datebuy': '9/11/23',
+      'expiredate': '17/11/23'
     },
     {
       'quantity': '600 G',
       'image': 'assets/images/pic1.jpg',
       'name': 'Tomato',
       'category': 'vegetable',
-      'datebuy': '12/11/23'
+      'datebuy': '12/11/23',
+      'expiredate': '17/11/23'
     },
     // Add more ingredients as needed
   ];
@@ -214,10 +218,12 @@ class _FridgePageState extends State<FridgePage> {
     DateTime dateBuy =
         DateFormat('dd/MM/yy').parse(ingredient['datebuy'] ?? '', true);
 
-    DateTime expirationDate = dateBuy.add(Duration(days: 7));
+    DateTime expirationDate = 
+        DateFormat('dd/MM/yy').parse(ingredient['expiredate'] ?? '', true);
 
     DateTime currentDate = DateTime.now();
     int daysLeft = expirationDate.difference(currentDate).inDays;
+    int period = expirationDate.difference(dateBuy).inDays;
 
     return GestureDetector(
         onTap: () {
@@ -260,10 +266,10 @@ class _FridgePageState extends State<FridgePage> {
                   ),
                   SizedBox(height: 10.0),
                   ExpirationLifeBar(
-                      daysLeft: daysLeft, height: 5.0, width: 120.0),
+                      daysLeft: daysLeft, height: 5.0, width: 120.0, period: period),
                   SizedBox(height: 8.0),
                   Text(
-                    '${daysLeft >= 0 ? daysLeft : 'Expired'} DAY LEFT',
+                    '${daysLeft >= 0 ? daysLeft : 'peroid'} DAY LEFT',
                     style: TextStyle(
                       fontSize: 14.0,
                       fontWeight: FontWeight.w500,
@@ -280,7 +286,7 @@ class _FridgePageState extends State<FridgePage> {
                   ),
                   SizedBox(height: 8.0),
                   Text(
-                    ingredient['datebuy']!,
+                    ingredient['expiredate']!,
                     style: TextStyle(
                       fontSize: 14.0,
                       fontWeight: FontWeight.w500,
@@ -299,14 +305,15 @@ class ExpirationLifeBar extends StatelessWidget {
   final int daysLeft;
   final double height;
   final double width;
+  final int period;
 
   ExpirationLifeBar(
-      {required this.daysLeft, this.height = 8.0, this.width = 100.0});
+      {required this.daysLeft, this.height = 8.0, this.width = 100.0, required this.period});
 
   @override
   Widget build(BuildContext context) {
-    double lifePercentage = daysLeft >= 0 ? (daysLeft / 7) : 0.0;
-    Color lifeBarColor = _getLifeBarColor();
+    double lifePercentage = daysLeft >= 0 ? (daysLeft / period) : 0.0;
+    Color lifeBarColor = _getLifeBarColor(lifePercentage);
 
     return Container(
       width: width,
@@ -323,12 +330,12 @@ class ExpirationLifeBar extends StatelessWidget {
     );
   }
 
-  Color _getLifeBarColor() {
-    if (daysLeft >= 5 && daysLeft <= 7) {
+  Color _getLifeBarColor(double percentage) {
+    if (1 > percentage && percentage >= 0.6) {
       return Colors.green;
-    } else if (daysLeft >= 3 && daysLeft <= 4) {
+    } else if (0.6 > percentage && percentage >= 0.3) {
       return Colors.orange;
-    } else if (daysLeft >= 1 && daysLeft <= 2) {
+    } else if (0.3 > percentage && percentage >= 0.0) {
       return Colors.red;
     } else {
       return Colors.grey; // You can set this to any color for an empty state
