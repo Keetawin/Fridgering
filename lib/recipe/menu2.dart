@@ -8,7 +8,6 @@ class Menu extends StatefulWidget {
   final int numIngredients;
   bool isBookmarked;
 
-
   Menu({
     required this.imageUrl,
     required this.tagAndTitle,
@@ -283,292 +282,307 @@ class _MenuState extends State<Menu> {
   }
 
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    body: Stack(
-      children: [
-        Positioned(
-          top: 20,
-          left: 0,
-          right: 0,
-          child: Image.asset(
-            imageUrl,
-            fit: BoxFit.cover,
-            width: double.infinity,
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          Positioned(
+            top: 20,
+            left: 0,
+            right: 0,
+            child: Image.asset(
+              imageUrl,
+              fit: BoxFit.cover,
+              width: double.infinity,
+            ),
           ),
-        ),
-        DraggableScrollableSheet(
-          initialChildSize: 0.7,
-          minChildSize: 0.7,
-          builder: (BuildContext context, ScrollController scrollController) {
-            return SingleChildScrollView(
-              controller: scrollController,
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Color(0xFFFAFAFA),
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(43.0)),
-                ),
-                padding: const EdgeInsets.all(31.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+          DraggableScrollableSheet(
+            initialChildSize: 0.7,
+            minChildSize: 0.7,
+            builder: (BuildContext context, ScrollController scrollController) {
+              return SingleChildScrollView(
+                controller: scrollController,
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Color(0xFFFAFAFA),
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(43.0)),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 30.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 30.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              tagAndTitle,
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w600,
-                              ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  tagAndTitle,
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                SizedBox(height: 2.5),
+                                Text(
+                                  tags[1],
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
                             ),
-                            SizedBox(height: 2.5),
-                            Text(
-                              tags[1],
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 4.0),
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                widget.isBookmarked = !widget.isBookmarked;
-                              });
-                              print('Bookmark tapped');
-                            },
-                            child: Icon(
-                              widget.isBookmarked
-                                  ? Icons.bookmark
-                                  : Icons.bookmark_border,
-                              color: widget.isBookmarked
-                                  ? Theme.of(context).primaryColor
-                                  : Colors.grey,
-                              size: 40.0,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 24),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Column(
-                          children: [
-                            Icon(Icons.soup_kitchen_outlined,
-                                size: 36, color: Theme.of(context).primaryColor),
-                            SizedBox(height: 4),
-                            Text(
-                              '${tags[0]}',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            Icon(Icons.schedule_outlined,
-                                size: 36, color: Theme.of(context).primaryColor),
-                            SizedBox(height: 4),
-                            Text(
-                              '${timeToCook} Min',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            Icon(Icons.local_fire_department_outlined,
-                                size: 36, color: Theme.of(context).primaryColor),
-                            SizedBox(height: 4),
-                            Text(
-                              '300 Kcal',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 28),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Ingredients',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600,
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 4.0),
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    widget.isBookmarked = !widget.isBookmarked;
+                                  });
+                                  print('Bookmark tapped');
+                                },
+                                child: Icon(
+                                  widget.isBookmarked
+                                      ? Icons.bookmark
+                                      : Icons.bookmark_border,
+                                  color: widget.isBookmarked
+                                      ? Theme.of(context).primaryColor
+                                      : Colors.grey,
+                                  size: 40.0,
                                 ),
                               ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Column(
+                            children: [
+                              Icon(Icons.soup_kitchen_outlined,
+                                  size: 36,
+                                  color: Theme.of(context).primaryColor),
                               SizedBox(height: 4),
                               Text(
-                                'How many servings?',
+                                '${tags[0]}',
                                 style: TextStyle(
                                   fontSize: 18,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black,
                                 ),
                               ),
                             ],
                           ),
-                          Row(
+                          Column(
                             children: [
-                              IconButton(
-                                icon: Icon(Icons.remove),
-                                onPressed: decrementCount,
-                              ),
+                              Icon(Icons.schedule_outlined,
+                                  size: 36,
+                                  color: Theme.of(context).primaryColor),
+                              SizedBox(height: 4),
                               Text(
-                                '$count',
+                                '${timeToCook} Min',
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w600,
+                                  color: Colors.black,
                                 ),
                               ),
-                              IconButton(
-                                icon: Icon(Icons.add),
-                                onPressed: incrementCount,
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              Icon(Icons.local_fire_department_outlined,
+                                  size: 36,
+                                  color: Theme.of(context).primaryColor),
+                              SizedBox(height: 4),
+                              Text(
+                                '300 Kcal',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black,
+                                ),
                               ),
                             ],
                           ),
                         ],
                       ),
-                    ),
-                    SizedBox(height: 16),
-                    ExpansionTile(
-                      title: Text('Protein',
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black)),
-                      initiallyExpanded: false,
-                      children: [
-                        buildIngredientsList(
-                            selectedProteinIngredients, proteinIngredients)
-                      ],
-                    ),
-                    // Vegetable Ingredients
-                    ExpansionTile(
-                      title: Text('Vegetable',
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black)),
-                      initiallyExpanded: false,
-                      children: [
-                        buildIngredientsList(
-                            selectedVegetableIngredients, vegetableIngredients)
-                      ],
-                    ),
-                    // Sauce Ingredients
-                    ExpansionTile(
-                      title: Text('Sauce',
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black)),
-                      initiallyExpanded: false,
-                      children: [
-                        buildIngredientsList(
-                            selectedSauceIngredients, sauceIngredients)
-                      ],
-                    ),
-                    Container(
-                      height: 60,
-                      margin: EdgeInsets.symmetric(horizontal: 36, vertical: 42),
-                      width: double.infinity,
-                      child: TextButton(
-                        child: Text(
-                          "Make this menu",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        onPressed: () {
-                          // เปลี่ยนไปยังหน้าขั้นตอนการทำอาหารแรก
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => buildCookingStepPage(
-                                  cookingSteps[currentStepIndex]),
+                      SizedBox(height: 28),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Ingredients',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  'How many servings?',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
                             ),
-                          );
-                        },
-                        style: TextButton.styleFrom(
-                          backgroundColor: Theme.of(context).primaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
+                            Row(
+                              children: [
+                                IconButton(
+                                  icon: Icon(Icons.remove),
+                                  onPressed: decrementCount,
+                                ),
+                                Text(
+                                  '$count',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.add),
+                                  onPressed: incrementCount,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      Container(
+                          padding: EdgeInsets.symmetric(horizontal: 18.0),
+                          child: Column(
+                            children: [
+                              ExpansionTile(
+                                title: Text('Protein',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.black)),
+                                initiallyExpanded: false,
+                                children: [
+                                  buildIngredientsList(
+                                      selectedProteinIngredients,
+                                      proteinIngredients)
+                                ],
+                              ),
+                              // Vegetable Ingredients
+                              ExpansionTile(
+                                title: Text('Vegetable',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.black)),
+                                initiallyExpanded: false,
+                                children: [
+                                  buildIngredientsList(
+                                      selectedVegetableIngredients,
+                                      vegetableIngredients)
+                                ],
+                              ),
+                              // Sauce Ingredients
+                              ExpansionTile(
+                                title: Text('Sauce',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.black)),
+                                initiallyExpanded: false,
+                                children: [
+                                  buildIngredientsList(selectedSauceIngredients,
+                                      sauceIngredients)
+                                ],
+                              ),
+                            ],
+                          )),
+                      Container(
+                        height: 60,
+                        margin:
+                            EdgeInsets.symmetric(horizontal: 36, vertical: 42),
+                        width: double.infinity,
+                        child: TextButton(
+                          child: Text(
+                            "Make this menu",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          onPressed: () {
+                            // เปลี่ยนไปยังหน้าขั้นตอนการทำอาหารแรก
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => buildCookingStepPage(
+                                    cookingSteps[currentStepIndex]),
+                              ),
+                            );
+                          },
+                          style: TextButton.styleFrom(
+                            backgroundColor: Theme.of(context).primaryColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
                           ),
                         ),
                       ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+          Positioned(
+            top: 40.0,
+            left: 16.0,
+            child: GestureDetector(
+              onTap: () {
+                // Pop the current screen to go back
+                Navigator.pop(context);
+              },
+              child: Container(
+                width: 40.0,
+                height: 40.0,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: Offset(0, 2),
                     ),
                   ],
                 ),
-              ),
-            );
-          },
-        ),
-        Positioned(
-          top: 40.0,
-          left: 16.0,
-          child: GestureDetector(
-            onTap: () {
-              // Pop the current screen to go back
-              Navigator.pop(context);
-            },
-            child: Container(
-              width: 40.0,
-              height: 40.0,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Icon(
-                Icons.arrow_back,
-                color: Colors.black,
-                size: 24.0,
+                child: Icon(
+                  Icons.arrow_back,
+                  color: Colors.black,
+                  size: 24.0,
+                ),
               ),
             ),
           ),
-        ),
-      ],
-    ),
-  );
-}
-
+        ],
+      ),
+    );
+  }
 }

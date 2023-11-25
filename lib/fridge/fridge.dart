@@ -19,8 +19,8 @@ class _FridgePageState extends State<FridgePage> {
       'image': 'assets/images/pic1.jpg',
       'name': 'Carrot',
       'category': 'vegetable',
-      'datebuy': '20/12/23',
-      'expiredate': '17/11/23'
+      'datebuy': '20/11/23',
+      'expiredate': '30/12/23'
     },
     {
       'quantity': '4 PCS',
@@ -218,7 +218,7 @@ class _FridgePageState extends State<FridgePage> {
     DateTime dateBuy =
         DateFormat('dd/MM/yy').parse(ingredient['datebuy'] ?? '', true);
 
-    DateTime expirationDate = 
+    DateTime expirationDate =
         DateFormat('dd/MM/yy').parse(ingredient['expiredate'] ?? '', true);
 
     DateTime currentDate = DateTime.now();
@@ -266,10 +266,13 @@ class _FridgePageState extends State<FridgePage> {
                   ),
                   SizedBox(height: 10.0),
                   ExpirationLifeBar(
-                      daysLeft: daysLeft, height: 5.0, width: 120.0, period: period),
+                      daysLeft: daysLeft,
+                      height: 5.0,
+                      width: 120.0,
+                      period: period),
                   SizedBox(height: 8.0),
                   Text(
-                    '${daysLeft >= 0 ? daysLeft : 'peroid'} DAY LEFT',
+                    daysLeft >= 0 ? '$daysLeft Day Left' : 'Expired',
                     style: TextStyle(
                       fontSize: 14.0,
                       fontWeight: FontWeight.w500,
@@ -308,7 +311,10 @@ class ExpirationLifeBar extends StatelessWidget {
   final int period;
 
   ExpirationLifeBar(
-      {required this.daysLeft, this.height = 8.0, this.width = 100.0, required this.period});
+      {required this.daysLeft,
+      this.height = 8.0,
+      this.width = 100.0,
+      required this.period});
 
   @override
   Widget build(BuildContext context) {

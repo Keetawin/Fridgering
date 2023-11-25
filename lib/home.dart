@@ -73,11 +73,7 @@ class _HomeState extends State<Home> {
     // Add more fridge item titles as needed
   ];
 
-  List<String> fridgeItemQuantity = [
-    '2 PCS',
-    '3 PCS',
-    '1PCS'
-  ];
+  List<String> fridgeItemQuantity = ['2 PCS', '3 PCS', '1PCS'];
 
   List<String> fridgeItemImages = [
     'assets/images/potato.jpg',
@@ -86,11 +82,7 @@ class _HomeState extends State<Home> {
     // Add more fridge item images as needed
   ];
 
-  List<String> fridgeItemDates = [
-    '25/11/23',
-    '20/11/23',
-    '21/11/23'
-  ];
+  List<String> fridgeItemDates = ['25/11/23', '20/11/23', '21/11/23'];
 
   List<String> fridgeItemExpirationDates = [
     '29/11/23',
@@ -136,7 +128,7 @@ class _HomeState extends State<Home> {
                                 'Hi ${widget.userName?.split(' ')[0]} 💙',
                                 style: TextStyle(
                                   fontSize: 18,
-                                  fontWeight: FontWeight.w600,
+                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
                               Text(
@@ -201,10 +193,8 @@ class _HomeState extends State<Home> {
                               numIngredients: numIngredients[index],
                               isBookmarked: isBookmarked[index],
                               onTap: () {
-                              setState(() {
-                                
-                              });
-                            },
+                                setState(() {});
+                              },
                             ),
                           );
                         },
@@ -258,7 +248,7 @@ class _HomeState extends State<Home> {
                           quantity: fridgeItemQuantity[index],
                           imageUrl: fridgeItemImages[index],
                           dateBuy: fridgeItemDates[index],
-                          expireDate:fridgeItemExpirationDates[index],
+                          expireDate: fridgeItemExpirationDates[index],
                         ),
                       ),
                     ),
@@ -352,7 +342,7 @@ class FridgeList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 200, // Adjust the height as needed
+      height: 225, // Adjust the height as needed
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: fridgeItems.length,

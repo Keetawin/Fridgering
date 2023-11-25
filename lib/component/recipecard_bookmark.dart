@@ -11,17 +11,16 @@ class CardItem extends StatelessWidget {
   final bool isBookmarked;
   final VoidCallback onTap;
 
-  CardItem(
-      {required this.index,
-      required this.imageUrl,
-      required this.tagAndTitle,
-      required this.tags,
-      required this.timeToCook,
-      required this.numIngredients,
-      required this.isBookmarked,
-      required this.onTap,
-      });
-      
+  CardItem({
+    required this.index,
+    required this.imageUrl,
+    required this.tagAndTitle,
+    required this.tags,
+    required this.timeToCook,
+    required this.numIngredients,
+    required this.isBookmarked,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -76,15 +75,15 @@ class CardItem extends StatelessWidget {
                     Text(
                       tagAndTitle,
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 17,
                         fontWeight: FontWeight.w600,
                         fontFamily: 'Poppins',
                       ),
                     ),
                     Icon(
-                    isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                    color: isBookmarked ? Colors.blue : null,
-                  ),
+                      isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+                      color: isBookmarked ? Colors.blue : null,
+                    ),
                   ],
                 ),
               ),

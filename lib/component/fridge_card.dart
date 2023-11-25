@@ -13,7 +13,8 @@ class FridgeListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: 8, right: 8,top: 8,bottom: 8), // Add padding values here
+      padding: EdgeInsets.only(
+          left: 8, right: 8, top: 8, bottom: 8), // Add padding values here
       child: Container(
         height: 200,
         width: 140,
@@ -39,13 +40,12 @@ class FridgeListItem extends StatelessWidget {
                 height: 100,
                 fit: BoxFit.cover,
               ),
-
               SizedBox(height: 10.0),
               Text(
                 title,
                 style: TextStyle(
                   fontSize: 16.0,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
