@@ -129,7 +129,7 @@ class _DietaryPageState extends State<DietaryPage> {
                 controller: expireNotificationController,
                 keyboardType: TextInputType.number,
                 inputFormatters: [
-                  // Allow only digits and limit length to 1 digit
+                  FilteringTextInputFormatter.allow(RegExp(r'^[1-7]$')),
                   LengthLimitingTextInputFormatter(1),
                 ],
                 decoration: InputDecoration(
