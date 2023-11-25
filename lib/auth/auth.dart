@@ -56,6 +56,7 @@ class _AuthState extends State<Auth> {
                 userId: user.uid,
                 userImage: user.photoURL,
                 userName: responseData['data']['name'],
+                userEmail: user.email,
               ),
             ),
           );
@@ -64,7 +65,12 @@ class _AuthState extends State<Auth> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => DietaryPage(),
+              builder: (context) => DietaryPage(
+                userId: user.uid,
+                userImage: user.photoURL,
+                userName: responseData['data']['name'],
+                userEmail: user.email,
+              ),
             ),
           );
         }

@@ -11,9 +11,11 @@ import 'dart:convert';
 class Home extends StatefulWidget {
   final String? userId;
   final String? userImage;
-  final String? userName; // Add this field
+  final String? userName;
+  final String? userEmail;
+  // Add this field
 
-  Home({this.userId, this.userImage, this.userName});
+  Home({this.userId, this.userImage, this.userName, this.userEmail});
   @override
   _HomeState createState() => _HomeState();
 }
