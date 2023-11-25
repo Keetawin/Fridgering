@@ -100,6 +100,7 @@ class _HomeState extends State<Home> {
     _pages = [
       Padding(
         padding: EdgeInsets.symmetric(vertical: 16),
+        child: SingleChildScrollView(
         child: Center(
           child: Column(
             children: [
@@ -258,6 +259,7 @@ class _HomeState extends State<Home> {
               ),
             ],
           ),
+        ),
         ),
       ),
 
