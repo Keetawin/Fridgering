@@ -46,6 +46,12 @@ dependencies:
   url_launcher: ^6.2.1
   flutter_facebook_auth: ^6.0.2
   go_router: ^12.0.1
+  percent_indicator: ^4.2.3
+  search_page: ^2.3.0
+  standard_searchbar: ^2.0.0
+  google_maps_flutter: ^2.5.0
+  geolocator: ^10.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

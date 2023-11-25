@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
-class IngredientPage extends StatefulWidget {
+class AddPage extends StatefulWidget {
   final Map<String, String> ingredient;
 
-  const IngredientPage({Key? key, required this.ingredient}) : super(key: key);
+  const AddPage({Key? key, required this.ingredient}) : super(key: key);
 
   @override
   _IngredientPageState createState() => _IngredientPageState();
 }
 
-class _IngredientPageState extends State<IngredientPage> {
+class _IngredientPageState extends State<AddPage> {
   bool isBookmarked = false;
 
   String expirationDate = 'DD/MM/YYYY';

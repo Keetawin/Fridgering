@@ -83,40 +83,7 @@ class _AuthState extends State<Auth> {
             ),
             SizedBox(height: 56),
             // Facebook Login Button
-            Container(
-              height: 64,
-              margin: EdgeInsets.symmetric(horizontal: 40),
-              width: double.infinity,
-              child: TextButton(
-                onPressed: () {},
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.facebook,
-                      color: Colors.white, // Set the color of the Facebook icon
-                    ),
-                    SizedBox(
-                        width: 8), // Add some spacing between the icon and text
-                    Text(
-                      "Sign In with Facebook",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-                style: TextButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: 24),
+
             // Google Login Button
             Container(
               height: 64,
@@ -154,43 +121,6 @@ class _AuthState extends State<Auth> {
             ),
             SizedBox(height: 24),
             // Apple Login Button
-            Container(
-              height: 64,
-              margin: EdgeInsets.symmetric(horizontal: 40),
-              width: double.infinity,
-              child: TextButton(
-                onPressed: () {
-                  // Add your Google login logic here
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    FaIcon(
-                      FontAwesomeIcons.apple,
-                      color: Colors.white,
-                      size: 24, // Adjust the size as needed
-                    ),
-                    SizedBox(
-                        width:
-                            12), // Add some spacing between the icon and text
-                    Text(
-                      "Sign In with Apple",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
       ),

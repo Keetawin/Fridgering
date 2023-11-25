@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import './recipe/recipe.dart';
 import './fridge/fridge.dart';
-import './market/market.dart';
 import './profile/profile.dart';
 import 'component/recipe_card.dart';
 import './component/fridge_card.dart';
+import './notification/notification.dart';
+import './market/market.dart';
 import 'dart:convert';
 
 class Home extends StatefulWidget {
@@ -19,6 +20,15 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int _currentIndex = 0; // Index of the selected tab
+
+  void _navigateToNotiScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => NotificationPage(),
+      ),
+    );
+  }
 
   late List<Widget> _pages;
 
@@ -80,6 +90,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+
     _pages = [
       Padding(
         padding: EdgeInsets.symmetric(vertical: 16),
@@ -89,7 +100,7 @@ class _HomeState extends State<Home> {
               SizedBox(height: 48),
               Container(
                 // User profile section
-                padding: EdgeInsets.symmetric(horizontal: 36),
+                padding: EdgeInsets.only(left: 36, right: 27),
                 child: Row(
                   children: [
                     Expanded(
@@ -127,9 +138,13 @@ class _HomeState extends State<Home> {
                         ],
                       ),
                     ),
-                    Icon(
-                      Icons.notifications,
-                      size: 30,
+                    IconButton(
+                      onPressed: _navigateToNotiScreen,
+                      icon: Icon(
+                        Icons.notifications,
+                        color: Colors.black,
+                        size: 30,
+                      ),
                     ),
                   ],
                 ),
@@ -234,12 +249,20 @@ class _HomeState extends State<Home> {
         ),
       ),
 
-      RecipePage(), // Use the RecipePage class
+      RecipePage(
+        imageUrls: imageUrls,
+        tagsAndTitles: tagsAndTitles,
+        tagsList: tagsList,
+        timeToCook: timeToCook,
+        numIngredients: numIngredients,
+      ), // Use the RecipePage class
       FridgePage(), // Use the FridgePage class
-      MarketPage(), // Use the MarketPage class
-      ProfilePage(),
+      ProfilePage(
+        userId: widget.userId,
+        userImage: widget.userImage,
+        userName: widget.userName,
+      ),
     ];
-    _loadRecipes();
   }
 
   void _loadRecipes() async {
@@ -287,10 +310,6 @@ class _HomeState extends State<Home> {
           BottomNavigationBarItem(
             icon: Icon(Icons.kitchen),
             label: 'Fridge',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart),
-            label: 'Market',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),

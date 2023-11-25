@@ -18,7 +18,6 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   List<int> bookmarkedRecipeIndices = [0, 2];
 
-
   List<List<String>> tagsList = [
     ['Fried', 'Thai cuisine', 'Spicy'],
     ['Hot', 'Japan cuisine', 'Soup'],
@@ -27,12 +26,20 @@ class _ProfilePageState extends State<ProfilePage> {
 
   List<int> timeToCook = [20, 30, 40];
   List<int> numIngredients = [5, 6, 7];
-  List<String> imageUrls = ['assets/images/pic2.jpg', 'assets/images/pic1.jpg', 'assets/images/pic3.jpg'];
+  List<String> imageUrls = [
+    'assets/images/pic2.jpg',
+    'assets/images/pic1.jpg',
+    'assets/images/pic3.jpg'
+  ];
   List<String> tagsAndTitles = ['Omelet', 'Wagyu A5', 'Tom Yum'];
 
   List<String> fridgeItemTitles = ['Potato', 'Egg(O)', 'Egg(A)'];
   List<String> fridgeItemQuantity = ['2 PCS', '3 PCS', '1PCS'];
-  List<String> fridgeItemImages = ['assets/images/potato.jpg', 'assets/images/egg.jpg', 'assets/images/egg.jpg'];
+  List<String> fridgeItemImages = [
+    'assets/images/potato.jpg',
+    'assets/images/egg.jpg',
+    'assets/images/egg.jpg'
+  ];
   List<String> fridgeItemDates = ['31/08/21', '31/08/21', '31/08/21'];
 
   void toggleBookmark(int index) {
@@ -55,7 +62,7 @@ class _ProfilePageState extends State<ProfilePage> {
             SizedBox(height: 48),
             Container(
               // User profile section
-              padding: EdgeInsets.symmetric(horizontal: 36),
+              padding: EdgeInsets.only(left: 36, right: 27),
               child: Row(
                 children: [
                   Expanded(
@@ -101,7 +108,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => SettingPage(), // Use SettingPage instead of SettingsPage
+                          builder: (context) =>
+                              SettingPage(), // Use SettingPage instead of SettingsPage
                         ),
                       );
                     },
@@ -110,112 +118,111 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
             Container(
-                // Recipe section
-                padding: EdgeInsets.only(left: 36),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 20),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Bookmarked Recipe',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
-                        ),
+              // Recipe section
+              padding: EdgeInsets.only(left: 36),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 20),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Bookmarked Recipe',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black,
                       ),
                     ),
-                    SizedBox(height: 16),
-                    // Horizontal ListView for recipe cards
-                    Container(
-                      height: 300,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: bookmarkedRecipeIndices.length,
-                        itemExtent: 290,
-                        itemBuilder: (context, index) {
-                          final int recipeIndex = bookmarkedRecipeIndices[index];
+                  ),
+                  SizedBox(height: 16),
+                  // Horizontal ListView for recipe cards
+                  Container(
+                    height: 300,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: bookmarkedRecipeIndices.length,
+                      itemExtent: 290,
+                      itemBuilder: (context, index) {
+                        final int recipeIndex = bookmarkedRecipeIndices[index];
 
-                          return Padding(
-                            padding: EdgeInsets.only(right: 8),
-                            child: CardItem(
-                              index: recipeIndex,
-                              imageUrl: imageUrls[recipeIndex],
-                              tagAndTitle: tagsAndTitles[recipeIndex],
-                              tags: tagsList[recipeIndex],
-                              timeToCook: timeToCook[recipeIndex],
-                              numIngredients: numIngredients[recipeIndex],
-                              isBookmarked: true,
-                              onTap: () {
-                                setState(() {
-                                  bookmarkedRecipeIndices.remove(recipeIndex);
-                                });
-                              },
-                            ),
-                          );
-                        },
-                      ),
+                        return Padding(
+                          padding: EdgeInsets.only(right: 8),
+                          child: CardItem(
+                            index: recipeIndex,
+                            imageUrl: imageUrls[recipeIndex],
+                            tagAndTitle: tagsAndTitles[recipeIndex],
+                            tags: tagsList[recipeIndex],
+                            timeToCook: timeToCook[recipeIndex],
+                            numIngredients: numIngredients[recipeIndex],
+                            isBookmarked: true,
+                            onTap: () {
+                              setState(() {
+                                bookmarkedRecipeIndices.remove(recipeIndex);
+                              });
+                            },
+                          ),
+                        );
+                      },
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              Container(
-                // Fridge section
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 20),
-                    Row(
-                      // Add padding to the Row
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 36),
-                          child: Text(
-                            'Fridge List',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 36),
-                          child: Text(
-                            '${fridgeItemTitles.length} items',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ),
-                        
-                      ],
-                    ),
-                    SizedBox(height: 16),
-                    Padding(
-                      // Add padding to the FridgeList
-                      padding: EdgeInsets.only(left: 36),
-                      child: FridgeList(
-                        fridgeItems: List.generate(
-                          fridgeItemTitles.length,
-                          (index) => FridgeListItem(
-                            title: fridgeItemTitles[index],
-                            quantity: fridgeItemQuantity[index],
-                            imageUrl: fridgeItemImages[index],
-                            dateBuy: fridgeItemDates[index],
+            ),
+            Container(
+              // Fridge section
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 20),
+                  Row(
+                    // Add padding to the Row
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(left: 36),
+                        child: Text(
+                          'Bookmarked Ingredients',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
                           ),
                         ),
                       ),
+                      Padding(
+                        padding: EdgeInsets.only(right: 36),
+                        child: Text(
+                          '${fridgeItemTitles.length} items',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 16),
+                  Padding(
+                    // Add padding to the FridgeList
+                    padding: EdgeInsets.only(left: 36),
+                    child: FridgeList(
+                      fridgeItems: List.generate(
+                        fridgeItemTitles.length,
+                        (index) => FridgeListItem(
+                          title: fridgeItemTitles[index],
+                          quantity: fridgeItemQuantity[index],
+                          imageUrl: fridgeItemImages[index],
+                          dateBuy: fridgeItemDates[index],
+                        ),
+                      ),
                     ),
-                    SizedBox(height: 16),
-                  ],
-                ),
+                  ),
+                  SizedBox(height: 16),
+                ],
               ),
+            ),
           ],
         ),
       ),

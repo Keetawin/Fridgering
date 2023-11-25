@@ -32,6 +32,8 @@ class _MenuState extends State<Menu> {
   int count = 1;
   int currentStepIndex = 0;
 
+  bool isBookmarked = false;
+
   List<String> cookingSteps = [
     'Step 1: Prepare the ingredients',
     'Step 2: Cook the proteins',
@@ -355,12 +357,22 @@ class _MenuState extends State<Menu> {
                       ),
                     ],
                   ),
-                  IconButton(
-                    icon: Icon(Icons.bookmark_border_outlined,
-                        size: 32, color: Colors.grey),
-                    onPressed: () {
-                      // Handle bookmark button pressed
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        isBookmarked = !isBookmarked;
+                      });
+                      print('Bookmark tapped');
                     },
+                    child: Icon(
+                      isBookmarked
+                          ? Icons.bookmark_rounded
+                          : Icons.bookmark_outline_rounded,
+                      color: isBookmarked
+                          ? Theme.of(context).primaryColor
+                          : Colors.grey,
+                      size: 40.0,
+                    ),
                   ),
                 ],
               ),
