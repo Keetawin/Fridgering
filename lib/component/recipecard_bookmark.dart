@@ -26,19 +26,19 @@ class CardItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => Menu(
-              imageUrl: imageUrl,
-              tagAndTitle: tagAndTitle,
-              tags: tags,
-              timeToCook: timeToCook,
-              numIngredients: numIngredients,
-              isBookmarked: isBookmarked, // Use ternary operator here
-            ),
-          ),
-        );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => Menu(
+        //       imageUrl: imageUrl,
+        //       tagAndTitle: tagAndTitle,
+        //       tags: tags,
+        //       timeToCook: timeToCook,
+        //       numIngredients: numIngredients,
+        //       isBookmarked: isBookmarked, // Use ternary operator here
+        //     ),
+        //   ),
+        // );
       },
       child: Container(
         width: 270,

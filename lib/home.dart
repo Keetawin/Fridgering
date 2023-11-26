@@ -102,175 +102,170 @@ class _HomeState extends State<Home> {
       Padding(
         padding: EdgeInsets.symmetric(vertical: 16),
         child: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            children: [
-              SizedBox(height: 48),
-              Container(
-                // User profile section
-                padding: EdgeInsets.only(left: 36, right: 27),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Row(
-                        children: [
-                          ClipOval(
-                            child: Image.network(
-                              widget.userImage ?? 'URL_TO_DEFAULT_IMAGE',
-                              width: 50,
-                              height: 50,
-                              fit: BoxFit.cover,
+          child: Center(
+            child: Column(
+              children: [
+                SizedBox(height: 48),
+                Container(
+                  // User profile section
+                  padding: EdgeInsets.only(left: 36, right: 27),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Row(
+                          children: [
+                            ClipOval(
+                              child: Image.network(
+                                widget.userImage ?? 'URL_TO_DEFAULT_IMAGE',
+                                width: 50,
+                                height: 50,
+                                fit: BoxFit.cover,
+                              ),
                             ),
-                          ),
-                          SizedBox(width: 16),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Hi ${widget.userName?.split(' ')[0]} 💙',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w700,
+                            SizedBox(width: 16),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Hi ${widget.userName?.split(' ')[0]} 💙',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                'Welcome to Fridgering',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.grey,
+                                Text(
+                                  'Welcome to Fridgering',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.grey,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    IconButton(
-                      onPressed: _navigateToNotiScreen,
-                      icon: Icon(
-                        Icons.notifications,
-                        color: Colors.black,
-                        size: 30,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                // Recipe section
-                padding: EdgeInsets.only(left: 36),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 20),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Recipes you can make',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
+                      IconButton(
+                        onPressed: _navigateToNotiScreen,
+                        icon: Icon(
+                          Icons.notifications,
                           color: Colors.black,
+                          size: 30,
                         ),
                       ),
-                    ),
-                    SizedBox(height: 16),
-                    // Horizontal ListView for recipe cards
-                    Container(
-                      height: 300, // Adjust the height as needed
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: imageUrls.length,
-                        itemExtent: 290,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: EdgeInsets.only(right: 8),
-                            child: CardItem(
-                              index: index,
-                              imageUrl: imageUrls[index],
-                              tagAndTitle: tagsAndTitles[index],
-                              tags: tagsList[index],
-                              timeToCook: timeToCook[index],
-                              numIngredients: numIngredients[index],
-                              isBookmarked: isBookmarked[index],
-                              onTap: () {
-                                setState(() {});
-                              },
-                            ),
-                          );
-                        },
-                      ),
-                    )
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              Container(
-                // Recipe section
-                padding: EdgeInsets.symmetric(horizontal: 36),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 20),
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Fridge List',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black,
-                            ),
+                Container(
+                  // Recipe section
+                  padding: EdgeInsets.only(left: 36),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 20),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Recipes you can make',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
                           ),
-                          Text(
-                            '${fridgeItemTitles.length} items',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ]),
-                    SizedBox(height: 16),
-                  ],
-                ),
-              ),
-              Container(
-                // Recipe section
-                padding: EdgeInsets.only(left: 36),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    FridgeList(
-                      fridgeItems: List.generate(
-                        fridgeItemTitles.length,
-                        (index) => FridgeListItem(
-                          title: fridgeItemTitles[index],
-                          quantity: fridgeItemQuantity[index],
-                          imageUrl: fridgeItemImages[index],
-                          dateBuy: fridgeItemDates[index],
-                          expireDate: fridgeItemExpirationDates[index],
                         ),
                       ),
-                    ),
-                    SizedBox(height: 16),
-                  ],
+                      SizedBox(height: 16),
+                      // Horizontal ListView for recipe cards
+                      Container(
+                        height: 300, // Adjust the height as needed
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: imageUrls.length,
+                          itemExtent: 290,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: EdgeInsets.only(right: 8),
+                              child: CardItem(
+                                index: index,
+                                imageUrl: imageUrls[index],
+                                tagAndTitle: tagsAndTitles[index],
+                                tags: tagsList[index],
+                                timeToCook: timeToCook[index],
+                                numIngredients: numIngredients[index],
+                                isBookmarked: isBookmarked[index],
+                                onTap: () {
+                                  setState(() {});
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-              ),
-            ],
+                Container(
+                  // Recipe section
+                  padding: EdgeInsets.symmetric(horizontal: 36),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 20),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Fridge List',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black,
+                              ),
+                            ),
+                            Text(
+                              '${fridgeItemTitles.length} items',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ]),
+                      SizedBox(height: 16),
+                    ],
+                  ),
+                ),
+                Container(
+                  // Recipe section
+                  padding: EdgeInsets.only(left: 36),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      FridgeList(
+                        fridgeItems: List.generate(
+                          fridgeItemTitles.length,
+                          (index) => FridgeListItem(
+                            title: fridgeItemTitles[index],
+                            quantity: fridgeItemQuantity[index],
+                            imageUrl: fridgeItemImages[index],
+                            dateBuy: fridgeItemDates[index],
+                            expireDate: fridgeItemExpirationDates[index],
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
         ),
       ),
 
       RecipePage(
-        imageUrls: imageUrls,
-        tagsAndTitles: tagsAndTitles,
-        tagsList: tagsList,
-        timeToCook: timeToCook,
-        numIngredients: numIngredients,
-        isBookmarked: false,
+        userId: widget.userId,
       ), // Use the RecipePage class
       FridgePage(), // Use the FridgePage class
       ProfilePage(

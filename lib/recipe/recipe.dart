@@ -2,30 +2,21 @@ import 'package:flutter/material.dart';
 import './menu2.dart';
 import '../notification/notification.dart';
 import 'package:standard_searchbar/standard_searchbar.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class RecipePage extends StatefulWidget {
-  final List<String> imageUrls;
-  final List<String> tagsAndTitles;
-  final List<List<String>> tagsList; // Define tagsList
-  final List<int> timeToCook; // Define timeToCook
-  final List<int> numIngredients; // Define numIngredients
-  final bool isBookmarked;
+  final String? userId;
 
-  RecipePage({
-    required this.imageUrls,
-    required this.tagsAndTitles,
-    required this.tagsList,
-    required this.timeToCook,
-    required this.numIngredients,
-    required this.isBookmarked,
-  });
+  RecipePage({required this.userId});
 
   @override
   _RecipePageState createState() => _RecipePageState();
 }
 
 class _RecipePageState extends State<RecipePage> {
-  List<int> searchResultsIndices = [];
+  List<Map<String, dynamic>> recipes = [];
+  List<Map<String, dynamic>> searchResults = [];
 
   void _navigateToNotiScreen() {
     Navigator.push(
@@ -41,12 +32,12 @@ class _RecipePageState extends State<RecipePage> {
       context,
       MaterialPageRoute(
         builder: (context) => Menu(
-          imageUrl: widget.imageUrls[index],
-          tagAndTitle: widget.tagsAndTitles[index],
-          tags: widget.tagsList[index],
-          timeToCook: widget.timeToCook[index],
-          numIngredients: widget.numIngredients[index],
-          isBookmarked: widget.isBookmarked,
+          recipeID: searchResults[index]['recipeID'].toString(),
+          recipeName: searchResults[index]['name'],
+          recipeImage: searchResults[index]['image'][0],
+          recipeTags:
+              (searchResults[index]['tags'] as List<dynamic>).cast<String>(),
+          recipeTime: searchResults[index]['cookTime'] as int,
         ),
       ),
     );
@@ -55,8 +46,32 @@ class _RecipePageState extends State<RecipePage> {
   @override
   void initState() {
     super.initState();
-    searchResultsIndices =
-        List.generate(widget.tagsAndTitles.length, (index) => index);
+    _fetchRecipes();
+  }
+
+  Future<void> _fetchRecipes() async {
+    try {
+      final response = await http.get(
+        Uri.parse(
+            'https://fridgeringapi.fly.dev/recipes/search?userID=${widget.userId}&match=false'),
+      );
+
+      if (response.statusCode == 200) {
+        // Successfully fetched recipes
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        final List<dynamic> recipeList = data['data'];
+        setState(() {
+          recipes = List<Map<String, dynamic>>.from(recipeList);
+          searchResults = List<Map<String, dynamic>>.from(recipeList);
+        });
+      } else {
+        // Handle errors
+        print('Failed to fetch recipes. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle other errors
+      print('Error: $e');
+    }
   }
 
   @override
@@ -100,12 +115,9 @@ class _RecipePageState extends State<RecipePage> {
               child: StandardSearchBar(
                 onChanged: (query) {
                   setState(() {
-                    searchResultsIndices = List.generate(
-                      widget.tagsAndTitles.length,
-                      (index) => index,
-                    ).where((index) {
-                      final title = widget.tagsAndTitles[index].toLowerCase();
-                      final imageUrl = widget.imageUrls[index].toLowerCase();
+                    searchResults = recipes.where((recipe) {
+                      final title = recipe['name'].toLowerCase();
+                      final imageUrl = recipe['image'][0].toLowerCase();
                       return title.contains(query.toLowerCase()) ||
                           imageUrl.contains(query.toLowerCase());
                     }).toList();
@@ -123,73 +135,73 @@ class _RecipePageState extends State<RecipePage> {
             Expanded(
               child: GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
+                  crossAxisCount: 2,
                   crossAxisSpacing: 8.0,
                   mainAxisSpacing: 8.0,
                 ),
-                itemCount: searchResultsIndices.length,
+                itemCount: searchResults.length,
                 itemBuilder: (context, index) {
-                  final recipeIndex = searchResultsIndices[index];
                   return GestureDetector(
-                      onTap: () {
-                        _navigateToMenuScreen(recipeIndex);
-                      },
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 9.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Stack(
-                              children: [
-                                Container(
+                    onTap: () {
+                      _navigateToMenuScreen(index);
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 0.0, right: 9.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Stack(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      spreadRadius: 2,
+                                      blurRadius: 5,
+                                      offset: Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  child: Image.network(
+                                    searchResults[index]['image'][0],
+                                    height: 150,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                left: 0,
+                                right: 0,
+                                child: Container(
+                                  padding: EdgeInsets.all(8.0),
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey.withOpacity(0.5),
-                                        spreadRadius: 2,
-                                        blurRadius: 5,
-                                        offset: Offset(0, 3),
-                                      ),
-                                    ],
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.only(
+                                      bottomLeft: Radius.circular(8.0),
+                                      bottomRight: Radius.circular(8.0),
+                                    ),
                                   ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    child: Image.asset(
-                                      widget.imageUrls[recipeIndex],
-                                      height: 100,
-                                      width: double.infinity,
-                                      fit: BoxFit.cover,
+                                  child: Text(
+                                    searchResults[index]['name'],
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
                                 ),
-                                Positioned(
-                                  bottom: 0,
-                                  left: 0,
-                                  right: 0,
-                                  child: Container(
-                                    padding: EdgeInsets.all(8.0),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.only(
-                                        bottomLeft: Radius.circular(8.0),
-                                        bottomRight: Radius.circular(8.0),
-                                      ),
-                                    ),
-                                    child: Text(
-                                      widget.tagsAndTitles[recipeIndex],
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ));
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
                 },
               ),
             ),
