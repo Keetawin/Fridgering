@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import '../recipe/menu2.dart';
 
 class CardItem extends StatelessWidget {
-  final int index;
-  final String imageUrl;
-  final String tagAndTitle;
-  final List<String> tags;
-  final int timeToCook;
+  final dynamic index;
+  final dynamic imageUrl;
+  final dynamic tagAndTitle;
+  final List<dynamic> tags;
+  final dynamic timeToCook;
   final int numIngredients;
   final bool isBookmarked;
   final VoidCallback onTap;
@@ -44,7 +44,6 @@ class CardItem extends StatelessWidget {
         width: 270,
         margin: EdgeInsets.only(right: 4),
         child: Card(
-          elevation: 2,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12.0),
           ),
@@ -56,12 +55,19 @@ class CardItem extends StatelessWidget {
                   topLeft: Radius.circular(12.0),
                   topRight: Radius.circular(12.0),
                 ),
-                child: Image.asset(
-                  imageUrl,
-                  width: 270,
-                  height: 150,
-                  fit: BoxFit.cover,
-                ),
+                child: imageUrl.isNotEmpty
+                    ? Image.network(
+                        imageUrl,
+                        width: 270,
+                        height: 150,
+                        fit: BoxFit.cover,
+                      )
+                    : Image.asset(
+                        'assets/default.png', // Replace with the path to your default image asset
+                        width: 270,
+                        height: 150,
+                        fit: BoxFit.cover,
+                      ),
               ),
               Padding(
                 padding: const EdgeInsets.only(
@@ -72,12 +78,17 @@ class CardItem extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      tagAndTitle,
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: 'Poppins',
+                    Flexible(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          tagAndTitle,
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
                       ),
                     ),
                     Icon(
@@ -93,7 +104,7 @@ class CardItem extends StatelessWidget {
                 child: Row(
                   children: [
                     ...tags.sublist(0, 2).map((tag) => Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 2.0),
                           child: TagWithBorderRadius(tag),
                         )),
                     if (tags.length > 2) ...[
@@ -144,16 +155,16 @@ class TagWithBorderRadius extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor, // Use the primary color
+        color: Theme.of(context).primaryColor,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Text(
-        tagText.toUpperCase(), // ทำให้ข้อความเป็นตัวพิมพ์ใหญ่ทั้งหมด
+        tagText.toUpperCase(),
+        overflow: TextOverflow.ellipsis,
         style: TextStyle(
           color: Colors.white,
-          fontSize: 14,
+          fontSize: 12,
           fontWeight: FontWeight.w500,
-          // Use white font color
         ),
       ),
     );
