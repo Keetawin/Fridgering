@@ -146,7 +146,7 @@ class _RecipePageState extends State<RecipePage> {
                       _navigateToMenuScreen(index);
                     },
                     child: Padding(
-                      padding: EdgeInsets.only(left: 0.0, right: 9.0),
+                      padding: EdgeInsets.only(left: 8.0, right: 12.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -160,7 +160,7 @@ class _RecipePageState extends State<RecipePage> {
                                       color: Colors.grey.withOpacity(0.5),
                                       spreadRadius: 2,
                                       blurRadius: 5,
-                                      offset: Offset(0, 2),
+                                      offset: Offset(0, 3),
                                     ),
                                   ],
                                 ),

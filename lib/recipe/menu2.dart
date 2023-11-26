@@ -41,6 +41,12 @@ class _MenuState extends State<Menu> {
   int count = 1;
   int currentStepIndex = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    _fetchRecipes();
+  }
+
   Future<void> _fetchRecipes() async {
     try {
       final response = await http.get(
@@ -98,64 +104,78 @@ class _MenuState extends State<Menu> {
     });
   }
 
-  Map<String, Map<String, dynamic>> listIngredients = {
-    'Chicken': {
-      'image': 'assets/images/pic1.jpg',
-      'quantity': 200,
-      'unit': 'g'
-    },
-    'Beef': {'image': 'assets/images/pic1.jpg', 'quantity': 150, 'unit': 'g'},
-    'Fish': {'image': 'assets/images/pic1.jpg', 'quantity': 180, 'unit': 'g'},
-    // เพิ่มวัตถุดิบและรายละเอียดตามที่ต้องการ
-  };
-
   Set<String> selectedIngredients = {};
+  Widget buildIngredientsList(
+      Set<String> selectedIngredients, List<Map<String, dynamic>> ingredients) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: ingredients.where((ingredientDetails) {
+        final amount =
+            int.tryParse(ingredientDetails['amount'].toString()) ?? 0;
 
-  // Widget buildIngredientsList(Set<String> selectedIngredients,
-  //     Map<String, Map<String, dynamic>> allIngredients) {
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: allIngredients.keys.map((ingredient) {
-  //       Map<String, dynamic> ingredientDetails = allIngredients[ingredient]!;
-  //       String imagePath =
-  //           ingredientDetails['image'] ?? 'default_image_path/default.png';
-  //       int quantity =
-  //           int.tryParse(ingredientDetails['quantity'].toString()) ?? 0;
-  //       String unit = ingredientDetails['unit'] ?? '';
+        return amount > 0;
+      }).map((ingredientDetails) {
+        String ingredientName = ingredientDetails['name'] ?? '';
 
-  //       return ListTile(
-  //         leading: Image.asset(
-  //           imagePath,
-  //           width: 36,
-  //           height: 36,
-  //         ),
-  //         title: Row(
-  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //           children: [
-  //             Text(
-  //               ingredient,
-  //               style: TextStyle(
-  //                 fontSize: 16,
-  //                 fontWeight: FontWeight.w600,
-  //               ),
-  //             ),
-  //             Text(
-  //               '${quantity * count} ${unit}',
-  //               style: TextStyle(
-  //                 fontSize: 16,
-  //                 fontWeight: FontWeight.w600,
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //         tileColor: selectedIngredients.contains(ingredient)
-  //             ? Colors.grey[300]
-  //             : null,
-  //         onTap: () {},
-  //       );
-  //     }).toList(),
-  //   );
-  // }
+        if (ingredientName.isEmpty) {
+          // ถ้า name ว่าง ให้ใช้ original แทน
+          ingredientName =
+              ingredientDetails['original'] ?? 'Unknown Ingredient';
+
+          // Split เพื่อให้ได้คำหน้า
+          List<String> words = ingredientName.split(' ');
+
+          // ตัดทิ้งเว้นวรรคหลังคำหน้า (ถ้ามี)
+          if (words.isNotEmpty) {
+            // ตัดคำหน้า
+            ingredientName = words[0];
+          }
+        }
+
+// ตรวจสอบความยาวและลบข้อมูลที่เกิน
+        const maxCharacters = 25;
+        if (ingredientName.length > maxCharacters) {
+          // หากเกิน 20 ตัวอักษร ให้ตัดเป็นบรรทัดใหม่
+          ingredientName = ingredientName.substring(0, maxCharacters) +
+              '\n-' +
+              ingredientName.substring(maxCharacters);
+        }
+
+        int quantity =
+            int.tryParse(ingredientDetails['amount'].toString()) ?? 0;
+        String unit = ingredientDetails['unit'] ?? '';
+
+        return ListTile(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                ingredientName,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Text(
+                '${quantity * count} ${unit}',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          tileColor: selectedIngredients.contains(ingredientName)
+              ? Colors.grey[300]
+              : null,
+          onTap: () {
+            // Handle tap on ingredient
+            // You can implement your logic here
+          },
+        );
+      }).toList(),
+    );
+  }
 
   // Widget buildCookingStepPage(String step) {
   //   return Scaffold(
@@ -271,7 +291,7 @@ class _MenuState extends State<Menu> {
                 child: Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Color(0xFFFAFAFA),
+                    color: Colors.white,
                     borderRadius:
                         BorderRadius.vertical(top: Radius.circular(43.0)),
                   ),
@@ -447,10 +467,10 @@ class _MenuState extends State<Menu> {
                                         fontSize: 18,
                                         fontWeight: FontWeight.w600,
                                         color: Colors.black)),
-                                initiallyExpanded: false,
+                                initiallyExpanded: true,
                                 children: [
-                                  // buildIngredientsList(
-                                  //     selectedIngredients, listIngredients)
+                                  buildIngredientsList(
+                                      selectedIngredients, ingredient)
                                 ],
                               ),
                               // Vegetable Ingredients
