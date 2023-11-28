@@ -17,8 +17,11 @@ class MainhomePage extends StatefulWidget {
 }
 
 class MainhomePageState extends State<MainhomePage> {
+  List<String> dietaryRestrictions = [];
   List<Map<String, dynamic>> recipes = [];
+  List<Map<String, dynamic>> ingredients = [];
   List<Map<String, dynamic>> user = [];
+  List<String> ingredientsimage = [];
   List<int> ingredientsLenght = [];
 
   void _navigateToNotiScreen() {
@@ -33,68 +36,117 @@ class MainhomePageState extends State<MainhomePage> {
   @override
   void initState() {
     super.initState();
-    _loadRecipes();
+    _loadUser();
+    _loadIngredient();
   }
 
-  Future<void> _loadRecipes() async {
-    try{
-      final userResponse = await http.get
-        (Uri.parse('https://fridgeringapi.fly.dev/user/${widget.userId}'));
-      
+  Future<void> _loadUser() async {
+    try {
+      final userResponse = await http.get(Uri.parse('https://fridgeringapi.fly.dev/user/${widget.userId}'));
+
       if (userResponse.statusCode == 200) {
         final Map<String, dynamic> userData = json.decode(userResponse.body);
         final Map<String, dynamic> userList = userData['data'];
 
-        dynamic dietaryRestrictionsData = userList['preferences']['dietaryRestriction'];
+        // Use 'List<String>' explicitly to ensure correct typing
+        List<String> dietaryRestrictionsData = List<String>.from(userList['preferences']['dietaryRestriction'] ?? []);
+        print('Dietary Restrictions: $dietaryRestrictionsData');
 
-        List<String> dietaryRestrictions = List<String>.from(dietaryRestrictionsData ?? []);
-
-        // Check if there are dietary restrictions
-        if (dietaryRestrictions.isNotEmpty) {
-
-          for (String restriction in dietaryRestrictions) {
-            
-            final recipesResponse = await http.get(
-                Uri.parse('https://fridgeringapi.fly.dev/recipes/search?tags=["$restriction"]&userID=${widget.userId}'));
-            if (recipesResponse.statusCode == 200) {
-              final Map<String, dynamic> recipesData = json.decode(recipesResponse.body);
-              final List<dynamic> recipeList = recipesData['data'];
-
-              for (var recipe in recipesData['data']) {
-                final recipeId = recipe['recipeID'];
-                final ingredientsResponse =
-                    await http.get(Uri.parse('https://fridgeringapi.fly.dev/recipes/$recipeId/ingredients'));
-
-                if (ingredientsResponse.statusCode == 200) {
-                  Map<String, dynamic> ingredientsData = json.decode(ingredientsResponse.body);
-                  final List<dynamic> ingredientsList = ingredientsData['data'];
-
-                  int count = ingredientsList.length;
-                  setState(() {
-                    ingredientsLenght.add(count);
-                  });
-
-                } else {
-                  print('Failed to load ingredients for recipe $recipeId. Status code: ${ingredientsResponse.statusCode}');
-                }
-              }
-              setState(() {
-                recipes.addAll(List<Map<String, dynamic>>.from(recipeList));
-              });
-
-            } else {
-              print('Failed to load recipes for $restriction. Status code: ${recipesResponse.statusCode}');
-            }
-          }
-
-          // Update the state once after the loop completes
-          
-        }
         setState(() {
+          dietaryRestrictions = dietaryRestrictionsData;
           user = [userList];
         });
+        _loadRecipes();
       } else {
         print('Failed to load user data. Status code: ${userResponse.statusCode}');
+        _loadRecipes();
+      }
+    } catch (e) {
+      // Handle other errors
+      print('Error: $e');
+    }
+  }
+
+  Future<void> _loadRecipes() async {
+    try{  
+        final List<String> restrictions = dietaryRestrictions.isNotEmpty ? dietaryRestrictions : [''];
+
+        for (String restriction in restrictions) {
+            
+          final recipesResponse = await http.get(
+              Uri.parse('https://fridgeringapi.fly.dev/recipes/search?tags=["$restriction"]&userID=${widget.userId}'));
+          if (recipesResponse.statusCode == 200) {
+            final Map<String, dynamic> recipesData = json.decode(recipesResponse.body);
+            final List<dynamic> allRecipes = recipesData['data'];
+            
+            allRecipes.shuffle();
+
+            // Take the first 5 recipes
+            final List<dynamic> randomRecipes = allRecipes.take(5).toList();
+
+            for (var recipe in randomRecipes) {
+              final recipeId = recipe['recipeID'];
+              final ingredientsResponse =
+                  await http.get(Uri.parse('https://fridgeringapi.fly.dev/recipes/$recipeId/ingredients'));
+
+              if (ingredientsResponse.statusCode == 200) {
+                Map<String, dynamic> ingredientsData = json.decode(ingredientsResponse.body);
+                final List<dynamic> ingredientsList = ingredientsData['data'];
+
+                int count = ingredientsList.length;
+                setState(() {
+                  ingredientsLenght.add(count);
+                });
+              } else {
+                print('Failed to load ingredients for recipe $recipeId. Status code: ${ingredientsResponse.statusCode}');
+              }
+            }
+            setState(() {
+              recipes.addAll(List<Map<String, dynamic>>.from(randomRecipes));
+              });
+          } else {
+            print('Failed to load recipes for $restriction. Status code: ${recipesResponse.statusCode}');
+          }          
+        }
+    } catch (e) {
+      // Handle other errors
+      print('Error: $e');
+    }
+  }
+
+  Future<void> _loadIngredient() async {
+    try {
+      final ingredientResponse = await http.get(Uri.parse('https://fridgeringapi.fly.dev/user/${widget.userId}/ingredients'));
+
+      if (ingredientResponse.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(ingredientResponse.body);
+        final List<dynamic> userIngredientsList = responseData['data'];
+
+        for (var ingredients in responseData['data']) {
+              final ingredientsId = ingredients['fcdId'];
+              final imageResponse =
+                  await http.get(Uri.parse('https://fridgeringapi.fly.dev/common_ingredient/$ingredientsId'));
+
+              if (imageResponse.statusCode == 200) {
+                Map<String, dynamic> ingredientsimgData = json.decode(imageResponse.body);
+                final Map<String, dynamic> ingredientsData = ingredientsimgData['data'];
+
+                final String ingredientsimg = ingredientsData['image'];
+
+                setState(() {
+                  ingredientsimage.add(ingredientsimg);
+                });
+              } else {
+                print('Failed to load ingredients for recipe $ingredientsId. Status code: ${imageResponse.statusCode}');
+              }
+            }
+        
+        setState(() {
+          ingredients = List<Map<String, dynamic>>.from(userIngredientsList);
+        });
+
+      } else {
+        print('Failed to load ingredient data. Status code: ${ingredientResponse.statusCode}');
       }
     } catch (e) {
       // Handle other errors
@@ -188,7 +240,7 @@ class MainhomePageState extends State<MainhomePage> {
                         height: 300,
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
-                          itemCount: recipes.length,
+                          itemCount: recipes.length > 5 ? 5 : recipes.length,
                           itemExtent: 290,
                           itemBuilder: (context, index) {
                             if (index < recipes.length && index < ingredientsLenght.length) {
@@ -199,7 +251,7 @@ class MainhomePageState extends State<MainhomePage> {
                                   imageUrl: recipes[index]['image'][0],
                                   tagAndTitle: recipes[index]['name'],
                                   tags: recipes[index]['tags'],
-                                  timeToCook: recipes[index]['cooktime'],
+                                  timeToCook: recipes[index]['cookTime'],
                                   numIngredients: ingredientsLenght[index],
                                   isBookmarked: false,
                                   onTap: () {
@@ -216,59 +268,60 @@ class MainhomePageState extends State<MainhomePage> {
                     ],
                   ),
                 ),
-                // Container(
-                //   // Recipe section
-                //   padding: EdgeInsets.symmetric(horizontal: 36),
-                //   child: Column(
-                //     crossAxisAlignment: CrossAxisAlignment.start,
-                //     children: [
-                //       SizedBox(height: 20),
-                //       Row(
-                //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //           children: [
-                //             Text(
-                //               'Fridge List',
-                //               style: TextStyle(
-                //                 fontSize: 18,
-                //                 fontWeight: FontWeight.w600,
-                //                 color: Colors.black,
-                //               ),
-                //             ),
-                //             Text(
-                //               '${fridgeItemTitles.length} items',
-                //               style: TextStyle(
-                //                 fontSize: 18,
-                //                 fontWeight: FontWeight.w600,
-                //                 color: Colors.grey,
-                //               ),
-                //             ),
-                //           ]),
-                //       SizedBox(height: 16),
-                //     ],
-                //   ),
-                // ),
-                // Container(
-                //   // Recipe section
-                //   padding: EdgeInsets.only(left: 36),
-                //   child: Column(
-                //     crossAxisAlignment: CrossAxisAlignment.start,
-                //     children: [
-                //       FridgeList(
-                //         fridgeItems: List.generate(
-                //           fridgeItemTitles.length,
-                //           (index) => FridgeListItem(
-                //             title: fridgeItemTitles[index],
-                //             quantity: fridgeItemQuantity[index],
-                //             imageUrl: fridgeItemImages[index],
-                //             dateBuy: fridgeItemDates[index],
-                //             expireDate: fridgeItemExpirationDates[index],
-                //           ),
-                //         ),
-                //       ),
-                //       SizedBox(height: 16),
-                //     ],
-                //   ),
-                // ),
+                Container(
+                  // Recipe section
+                  padding: EdgeInsets.symmetric(horizontal: 36),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 20),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Fridge List',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black,
+                              ),
+                            ),
+                            Text(
+                              '${ingredients.length} items',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ]),
+                      SizedBox(height: 16),
+                    ],
+                  ),
+                ),
+                Container(
+                  // Recipe section
+                  padding: EdgeInsets.only(left: 36),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      FridgeList(
+                        fridgeItems: List.generate(
+                          ingredients.length,
+                          (index) => FridgeListItem(
+                            title: ingredients[index]['name'],
+                            quantity: ingredients[index]['amount'],
+                            unit: ingredients[index]['unit'],
+                            imageUrl: ingredientsimage[index],
+                            addedDate: ingredients[index]['addedDate'],
+                            expiredDate: ingredients[index]['expiredDate'],
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),

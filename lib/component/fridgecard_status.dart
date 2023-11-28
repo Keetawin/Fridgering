@@ -3,23 +3,25 @@ import 'package:intl/intl.dart';
 
 class FridgeListItem extends StatelessWidget {
   final String title;
-  final String quantity;
+  final int quantity;
+  final String unit;
   final String imageUrl;
-  final String dateBuy;
-  final String expireDate;
+  final Map<String, dynamic> addedDate;
+  final Map<String, dynamic> expiredDate;
 
   FridgeListItem({
     required this.title,
     required this.quantity,
+    required this.unit,
     required this.imageUrl,
-    required this.dateBuy,
-    required this.expireDate,
+    required this.addedDate,
+    required this.expiredDate,
   });
 
   @override
   Widget build(BuildContext context) {
-    DateTime dateBuyDateTime = DateFormat('dd/MM/yy').parse(dateBuy, true);
-    DateTime expirationDate = DateFormat('dd/MM/yy').parse(expireDate, true);
+    DateTime dateBuyDateTime = DateTime.fromMillisecondsSinceEpoch(addedDate["_seconds"] * 1000);
+    DateTime expirationDate = DateTime.fromMillisecondsSinceEpoch(expiredDate["_seconds"] * 1000);
 
     DateTime currentDate = DateTime.now();
     int daysLeft = expirationDate.difference(currentDate).inDays;
@@ -27,7 +29,8 @@ class FridgeListItem extends StatelessWidget {
 
     return Padding(
       padding: EdgeInsets.only(
-          left: 8, right: 8, top: 8, bottom: 8), // Add padding values here
+        left: 8, right: 8, top: 8, bottom: 8,
+      ),
       child: Container(
         height: 200,
         width: 140,
@@ -48,22 +51,23 @@ class FridgeListItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(height: 10.0),
-              QuantityBox(quantity: quantity),
+              QuantityBox(quantity: quantity, unit: unit),
               SizedBox(height: 5.0),
-              Image.asset(
+              Image.network(
                 imageUrl,
                 height: 50,
                 fit: BoxFit.cover,
               ),
               SizedBox(height: 5.0),
               ExpirationLifeBar(
-                  daysLeft: daysLeft,
-                  height: 5.0,
-                  width: 120.0,
-                  period: period),
+                daysLeft: daysLeft,
+                height: 5.0,
+                width: 120.0,
+                period: period,
+              ),
               SizedBox(height: 4.0),
               Text(
-                '${daysLeft >= 0 ? daysLeft : 'Expired'} DAY LEFT',
+                daysLeft >= 0 ? '$daysLeft Day Left' : 'Expired',
                 style: TextStyle(
                   fontSize: 14.0,
                   fontWeight: FontWeight.normal,
@@ -71,16 +75,23 @@ class FridgeListItem extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 6.0),
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.w600,
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 3.0),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w600,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                 ),
               ),
               SizedBox(height: 6.0),
               Text(
-                expireDate,
+                DateFormat('dd/MM/yy').format(expirationDate),
                 style: TextStyle(
                   fontSize: 14.0,
                   fontWeight: FontWeight.normal,
@@ -101,11 +112,12 @@ class ExpirationLifeBar extends StatelessWidget {
   final double width;
   final int period;
 
-  ExpirationLifeBar(
-      {required this.daysLeft,
-      this.height = 8.0,
-      this.width = 100.0,
-      required this.period});
+  ExpirationLifeBar({
+    required this.daysLeft,
+    this.height = 8.0,
+    this.width = 100.0,
+    required this.period,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -143,9 +155,14 @@ class ExpirationLifeBar extends StatelessWidget {
 }
 
 class QuantityBox extends StatelessWidget {
-  final String quantity;
+  final int quantity;
+  final String unit;
 
-  const QuantityBox({Key? key, required this.quantity}) : super(key: key);
+  const QuantityBox({
+    Key? key,
+    required this.quantity,
+    required this.unit,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -158,7 +175,7 @@ class QuantityBox extends StatelessWidget {
         borderRadius: BorderRadius.circular(30.0),
       ),
       child: Text(
-        '$quantity',
+        '$quantity ${unit.toUpperCase()}', // Make unit uppercase
         style: TextStyle(
           fontSize: 14.0,
           fontWeight: FontWeight.normal,

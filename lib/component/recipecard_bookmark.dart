@@ -81,12 +81,17 @@ class CardItem extends StatelessWidget {
                     Flexible(
                       child: FittedBox(
                         fit: BoxFit.scaleDown,
-                        child: Text(
-                          tagAndTitle,
-                          style: TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w600,
-                            fontFamily: 'Poppins',
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Text(
+                            tagAndTitle,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w600,
+                              fontFamily: 'Poppins',
+                            ),
                           ),
                         ),
                       ),
@@ -103,13 +108,13 @@ class CardItem extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 12.0),
                 child: Row(
                   children: [
-                    ...tags.sublist(0, 2).map((tag) => Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                          child: TagWithBorderRadius(tag),
-                        )),
-                    if (tags.length > 2) ...[
-                      SizedBox(width: 6),
-                      TagWithBorderRadius('+${tags.length - 2}'),
+                    if (tags.isNotEmpty) ...tags.sublist(0, 1).map((tag) => Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                      child: TagWithBorderRadius(tag),
+                    )),
+                    if (tags.length > 1) ...[
+                      SizedBox(width: 2),
+                      TagWithBorderRadius('+${tags.length - 1}'),
                     ],
                   ],
                 ),
@@ -153,7 +158,7 @@ class TagWithBorderRadius extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: EdgeInsets.symmetric(horizontal: 7, vertical: 4),
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColor,
         borderRadius: BorderRadius.circular(16),
