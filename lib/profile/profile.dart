@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-
+import 'package:http/http.dart' as http;
 import '../component/fridge_card.dart';
 import '../component/recipecard_bookmark.dart';
+import 'dart:convert';
 import '../auth/setting.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -16,42 +17,124 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  List<int> bookmarkedRecipeIndices = [0, 2];
+  List<String> pinnedRecipes = [];
+  List<int> pinnedIngredients = [];
+  List<Map<String, dynamic>> recipes = [];
+  List<Map<String, dynamic>> ingredients = [];
+  List<Map<String, dynamic>> user = [];
+  List<int> ingredientsLenght = [];
 
-  List<List<String>> tagsList = [
-    ['Fried', 'Thai cuisine', 'Spicy'],
-    ['Hot', 'Japan cuisine', 'Soup'],
-    ['Hot', 'Soup'],
-  ];
+  @override
+  void initState() {
+    super.initState();
+    refreshProfilePage();
+  }
+  void refreshProfilePage() {
+    _loadUser();
+    pinnedIngredients = [];
+    pinnedRecipes = [];
+    recipes = [];
+    ingredients = [];
+    user = [];
+    ingredientsLenght = [];
+  }
 
-  List<int> timeToCook = [20, 30, 40];
-  List<int> numIngredients = [5, 6, 7];
-  List<String> imageUrls = [
-    'assets/images/pic2.jpg',
-    'assets/images/pic1.jpg',
-    'assets/images/pic3.jpg'
-  ];
-  List<String> tagsAndTitles = ['Omelet', 'Wagyu A5', 'Tom Yum'];
+  Future<void> _loadUser() async {
+    try {
+      final userResponse = await http.get(Uri.parse('https://fridgeringapi.fly.dev/user/${widget.userId}'));
 
-  List<String> fridgeItemTitles = ['Potato', 'Egg(O)', 'Egg(A)'];
-  List<String> fridgeItemQuantity = ['2 PCS', '3 PCS', '1PCS'];
-  List<String> fridgeItemImages = [
-    'assets/images/potato.jpg',
-    'assets/images/egg.jpg',
-    'assets/images/egg.jpg'
-  ];
-  List<String> fridgeItemDates = ['31/08/21', '31/08/21', '31/08/21'];
+      if (userResponse.statusCode == 200) {
+        final Map<String, dynamic> userData = json.decode(userResponse.body);
+        final Map<String, dynamic> userList = userData['data'];
 
-  List<String> fridgeItemExpirationDates = ['31/12/23', '31/12/23', '31/12/23'];
+        List<String> pinnedRecipesData = List<String>.from(userList['pinnedRecipes'] ?? []);
+        List<int> pinnedIngredientData = List<int>.from(userList['pinnedIngredients'] ?? []);
+        print(pinnedIngredientData);
 
-  void toggleBookmark(int index) {
-    setState(() {
-      if (bookmarkedRecipeIndices.contains(index)) {
-        bookmarkedRecipeIndices.remove(index);
-      } else {
-        bookmarkedRecipeIndices.add(index);
+        setState(() {
+          pinnedIngredients = pinnedIngredientData;
+          pinnedRecipes = pinnedRecipesData;
+          user = [userList];
+        });
+        _loadRecipes();
+        _loadIngredient();
+      } else {   
+        print('Failed to load user data. Status code: ${userResponse.statusCode}');
+        _loadRecipes();
+        _loadIngredient();
       }
-    });
+    } catch (e) {
+      // Handle other errors
+      print('Error: $e');
+    }
+  }
+
+Future<void> _loadRecipes() async {
+  try {  
+    final List<String> restrictions = pinnedRecipes.isNotEmpty ? pinnedRecipes : [''];
+
+    for (String restriction in restrictions) {
+      final recipesResponse = await http.get(
+          Uri.parse('https://fridgeringapi.fly.dev/recipes/$restriction'));
+      
+      if (recipesResponse.statusCode == 200) {
+        final Map<String, dynamic> recipesData = json.decode(recipesResponse.body);
+        final Map<String, dynamic> oneRecipes = recipesData['data'];
+
+          setState(() {
+            recipes.add(oneRecipes);
+          });
+      } else {
+        print('Failed to load recipes for $restriction. Status code: ${recipesResponse.statusCode}');
+      } 
+
+      final ingredientsResponse = await http.get(Uri.parse('https://fridgeringapi.fly.dev/recipes/$restriction/ingredients'));
+
+      if (ingredientsResponse.statusCode == 200) {
+        Map<String, dynamic> ingredientsData = json.decode(ingredientsResponse.body);
+        final List<dynamic> ingredientsList = ingredientsData['data'];
+
+        int count = ingredientsList.length;
+        setState(() {
+          ingredientsLenght.add(count);
+        });
+      } else {
+        print('Failed to load ingredients for recipe $restriction. Status code: ${ingredientsResponse.statusCode}');
+      }         
+    }
+  } catch (e) {
+    // Handle other errors
+    print('Error: $e');
+  }
+}
+
+
+
+  Future<void> _loadIngredient() async {
+    try {
+      final List<int> restrictions = pinnedIngredients.isNotEmpty ? pinnedIngredients : [];
+      print('pinnedIngredients: $pinnedIngredients');
+
+      for (int restriction in restrictions) {
+        final ingredientResponse = await http.get(
+            Uri.parse('https://fridgeringapi.fly.dev/common_ingredient/$restriction'));
+        
+        if (ingredientResponse.statusCode == 200) {
+          final Map<String, dynamic> IngredientData = json.decode(ingredientResponse.body);
+          final Map<String, dynamic> oneIngredient = IngredientData['data'];
+          print(oneIngredient);
+            setState(() {
+              ingredients.add(oneIngredient);
+            });
+        } else {
+          print('Failed to load ingredient data. Status code: ${ingredientResponse.statusCode}');
+        }
+      }
+    }
+    catch (e) {
+      // Handle other errors
+      print('Error: $e');
+    }
   }
 
   @override
@@ -138,36 +221,35 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   SizedBox(height: 16),
-                  // Horizontal ListView for recipe cards
-                  // Container(
-                  //   height: 300,
-                  //   child: ListView.builder(
-                  //     scrollDirection: Axis.horizontal,
-                  //     itemCount: bookmarkedRecipeIndices.length,
-                  //     itemExtent: 290,
-                  //     itemBuilder: (context, index) {
-                  //       final int recipeIndex = bookmarkedRecipeIndices[index];
-
-                  //       return Padding(
-                  //         padding: EdgeInsets.only(right: 8),
-                  //         child: CardItem(
-                  //           index: recipeIndex,
-                  //           imageUrl: imageUrls[recipeIndex],
-                  //           tagAndTitle: tagsAndTitles[recipeIndex],
-                  //           tags: tagsList[recipeIndex],
-                  //           timeToCook: timeToCook[recipeIndex],
-                  //           numIngredients: numIngredients[recipeIndex],
-                  //           isBookmarked: true,
-                  //           onTap: () {
-                  //             setState(() {
-                  //               bookmarkedRecipeIndices.remove(recipeIndex);
-                  //             });
-                  //           },
-                  //         ),
-                  //       );
-                  //     },
-                  //   ),
-                  // ),
+                  //Horizontal ListView for recipe cards
+                  Container(
+                    height: 300,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: recipes.length > 5 ? 5 : recipes.length,
+                      itemExtent: 290,
+                      itemBuilder: (context, index) {
+                        if (index < recipes.length && index < ingredientsLenght.length) {
+                          return Padding(
+                            padding: EdgeInsets.only(right: 8),
+                            child: CardItem(
+                              index: index,
+                              user: user.isNotEmpty ? user[0] : {},
+                              recipeId: recipes[index]['recipeID'],
+                              imageUrl: recipes[index]['image'][0],
+                              tagAndTitle: recipes[index]['name'],
+                              tags: recipes[index]['tags'],
+                              timeToCook: recipes[index]['cookTime'],
+                              numIngredients: ingredientsLenght[index],
+                              onTap: refreshProfilePage,
+                            ),
+                          );
+                        } else {
+                          return SizedBox.shrink(); // Or some placeholder if data is not available
+                        }
+                      },
+                    ),
+                  )
                 ],
               ),
             ),
@@ -195,7 +277,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       Padding(
                         padding: EdgeInsets.only(right: 36),
                         child: Text(
-                          '${fridgeItemTitles.length} items',
+                          '${ingredients.length} items',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
@@ -211,10 +293,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     padding: EdgeInsets.only(left: 36),
                     child: FridgeList(
                       fridgeItems: List.generate(
-                        fridgeItemTitles.length,
+                        ingredients.length,
                         (index) => FridgeListItem(
-                          title: fridgeItemTitles[index],
-                          imageUrl: fridgeItemImages[index],
+                          title: ingredients[index]['description'],
+                          imageUrl: ingredients[index]['image'],
                         ),
                       ),
                     ),

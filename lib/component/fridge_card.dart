@@ -10,11 +10,10 @@ class FridgeListItem extends StatelessWidget {
     required this.imageUrl,
   });
 
-  @override
+ @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(
-          left: 8, right: 8, top: 8, bottom: 8), // Add padding values here
+      padding: EdgeInsets.all(8.0),
       child: Container(
         height: 200,
         width: 140,
@@ -34,18 +33,36 @@ class FridgeListItem extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(height: 10.0),
-              Image.asset(
-                imageUrl,
-                height: 100,
-                fit: BoxFit.cover,
+              ClipRRect(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(16.0),
+                  topRight: Radius.circular(16.0),
+                ),
+                child: Image.network(
+                  imageUrl,
+                  height: 95,
+                  width: 140,
+                  fit: BoxFit.cover,
+                ),
               ),
               SizedBox(height: 10.0),
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.w600,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ],

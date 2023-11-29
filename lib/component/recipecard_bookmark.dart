@@ -32,7 +32,23 @@ class _CardItemState extends State<CardItem> {
   bool isPinned = false;
 
   @override
+  void initState() {
+  super.initState();
+  WidgetsBinding.instance!.addPostFrameCallback((_) {
+    if (widget.user.isNotEmpty) {
+      // Check if the current recipeId is in the list of pinnedRecipes
+      bool isRecipePinned = widget.user['pinnedRecipes']?.contains(widget.recipeId) ?? false;
+
+      setState(() {
+        isPinned = isRecipePinned;
+      });
+    }
+  });
+}
+
+  @override
   Widget build(BuildContext context) {
+
     return GestureDetector(
       onTap: () async {
         final result = await Navigator.push(
@@ -56,6 +72,7 @@ class _CardItemState extends State<CardItem> {
             isPinned = result;
           });
         }
+        widget.onTap();
       },
       child: Container(
         width: 270,

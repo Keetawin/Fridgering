@@ -50,13 +50,16 @@ class FridgeListItem extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(height: 10.0),
+              SizedBox(height: 6.0),
               QuantityBox(quantity: quantity, unit: unit),
               SizedBox(height: 5.0),
-              Image.network(
-                imageUrl,
-                height: 50,
-                fit: BoxFit.cover,
+              ClipRRect(
+                child: Image.network(
+                  imageUrl,
+                  height: 79,
+                  width: 140, 
+                  fit: BoxFit.cover,
+                ),
               ),
               SizedBox(height: 5.0),
               ExpirationLifeBar(
