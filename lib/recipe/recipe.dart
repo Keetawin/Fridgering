@@ -32,12 +32,14 @@ class _RecipePageState extends State<RecipePage> {
       context,
       MaterialPageRoute(
         builder: (context) => Menu(
+          userID: 'userID=${widget.userId ?? ''}&match=false',
           recipeID: searchResults[index]['recipeID'].toString(),
           recipeName: searchResults[index]['name'],
           recipeImage: searchResults[index]['image'][0],
           recipeTags:
               (searchResults[index]['tags'] as List<dynamic>).cast<String>(),
           recipeTime: searchResults[index]['cookTime'] as int,
+          isPinned: false,
         ),
       ),
     );

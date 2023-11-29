@@ -4,18 +4,22 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class Menu extends StatefulWidget {
+  final String userID;
   final String recipeID;
   final String recipeName;
   final String recipeImage;
   final List<String> recipeTags;
   final int recipeTime;
+  final bool isPinned;
 
   Menu({
+    required this.userID,
     required this.recipeID,
     required this.recipeName,
     required this.recipeImage,
     required this.recipeTags,
     required this.recipeTime,
+    required this.isPinned,
   });
 
   @override
@@ -37,7 +41,9 @@ class _MenuState extends State<Menu> {
   final List<String> recipeTags;
   final int recipeTime;
   List<Map<String, dynamic>> ingredient = [];
-  // You can replace this with the actual image URL if available
+  List<Map<String, dynamic>> user= [];
+  bool isPinned = false; 
+
   int count = 1;
   int currentStepIndex = 0;
 
@@ -45,6 +51,42 @@ class _MenuState extends State<Menu> {
   void initState() {
     super.initState();
     _fetchRecipes();
+    _loadUser();
+    isPinned = widget.isPinned;
+  }
+
+  Future<void> _togglePinStatus() async {
+    try {
+      final userId = widget.userID;
+      final recipeId = widget.recipeID;
+      final baseUrl = 'https://fridgeringapi.fly.dev/user/$userId/pin_recipes/$recipeId';
+
+      if (isPinned) {
+        // If already pinned, send a DELETE request to unpin
+        final response = await http.delete(Uri.parse(baseUrl));
+
+        if (response.statusCode == 200) {
+          setState(() {
+            isPinned = false;
+          });
+        } else {
+          print('Failed to unpin recipe. Status code: ${response.statusCode}');
+        }
+      } else {
+        // If not pinned, send a POST request to pin
+        final response = await http.post(Uri.parse(baseUrl));
+
+        if (response.statusCode == 200) {
+          setState(() {
+            isPinned = true;
+          });
+        } else {
+          print('Failed to pin recipe. Status code: ${response.statusCode}');
+        }
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
   }
 
   Future<void> _fetchRecipes() async {
@@ -64,6 +106,27 @@ class _MenuState extends State<Menu> {
       } else {
         // Handle errors
         print('Failed to fetch recipes. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle other errors
+      print('Error: $e');
+    }
+  }
+
+  Future<void> _loadUser() async {
+    try {
+      final userResponse = await http.get(Uri.parse('https://fridgeringapi.fly.dev/user/${widget.userID}'));
+
+      if (userResponse.statusCode == 200) {
+        final Map<String, dynamic> userData = json.decode(userResponse.body);
+        final Map<String, dynamic> userList = userData['data'];
+
+        setState(() {
+          user = [userList];
+          isPinned = (userList['pinnedRecipes'] as List?)?.contains(widget.recipeID) ?? false;
+        });
+      } else {
+        print('Failed to load user data. Status code: ${userResponse.statusCode}');
       }
     } catch (e) {
       // Handle other errors
@@ -269,6 +332,7 @@ class _MenuState extends State<Menu> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: Stack(
         children: [
@@ -330,21 +394,10 @@ class _MenuState extends State<Menu> {
                             Padding(
                               padding: const EdgeInsets.only(bottom: 4.0),
                               child: GestureDetector(
-                                onTap: () {
-                                  // setState(() {
-                                  //   widget.isBookmarked = !widget.isBookmarked;
-                                  // });
-                                  // print('Bookmark tapped');
-                                },
+                                onTap: _togglePinStatus, // Call the toggle method here
                                 child: Icon(
-                                  Icons.bookmark_border,
-                                  // widget.isBookmarked
-                                  //     ? Icons.bookmark
-                                  //     : Icons.bookmark_border,
-                                  // color: widget.isBookmarked
-                                  //     ? Theme.of(context).primaryColor
-                                  //     : Colors.grey,
-                                  // size: 40.0,
+                                  isPinned ? Icons.bookmark : Icons.bookmark_border,
+                                  color: isPinned ? Theme.of(context).primaryColor : null,
                                 ),
                               ),
                             ),
@@ -522,7 +575,7 @@ class _MenuState extends State<Menu> {
             child: GestureDetector(
               onTap: () {
                 // Pop the current screen to go back
-                Navigator.pop(context);
+                Navigator.pop(context, isPinned);
               },
               child: Container(
                 width: 40.0,

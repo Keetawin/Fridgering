@@ -1,44 +1,61 @@
 import 'package:flutter/material.dart';
 import '../recipe/menu2.dart';
 
-class CardItem extends StatelessWidget {
+class CardItem extends StatefulWidget {
   final dynamic index;
+  final Map<String, dynamic> user;
+  final dynamic recipeId;
   final dynamic imageUrl;
   final dynamic tagAndTitle;
   final List<dynamic> tags;
   final dynamic timeToCook;
   final int numIngredients;
-  final bool isBookmarked;
   final VoidCallback onTap;
 
   CardItem({
     required this.index,
+    required this.user,
+    required this.recipeId,
     required this.imageUrl,
     required this.tagAndTitle,
     required this.tags,
     required this.timeToCook,
     required this.numIngredients,
-    required this.isBookmarked,
     required this.onTap,
   });
 
   @override
+  _CardItemState createState() => _CardItemState();
+}
+
+class _CardItemState extends State<CardItem> {
+  bool isPinned = false;
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => Menu(
-        //       imageUrl: imageUrl,
-        //       tagAndTitle: tagAndTitle,
-        //       tags: tags,
-        //       timeToCook: timeToCook,
-        //       numIngredients: numIngredients,
-        //       isBookmarked: isBookmarked, // Use ternary operator here
-        //     ),
-        //   ),
-        // );
+      onTap: () async {
+        final result = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Menu(
+              userID: widget.user['userID'] ?? '',
+              recipeID: widget.recipeId,
+              recipeName: widget.tagAndTitle,
+              recipeImage: widget.imageUrl,
+              recipeTags: widget.tags.cast<String>(),
+              recipeTime: widget.timeToCook,
+              isPinned: isPinned,
+            ),
+          ),
+        );
+
+        // Update the state based on the result
+        if (result != null && result is bool) {
+          setState(() {
+            isPinned = result;
+          });
+        }
       },
       child: Container(
         width: 270,
@@ -55,9 +72,9 @@ class CardItem extends StatelessWidget {
                   topLeft: Radius.circular(12.0),
                   topRight: Radius.circular(12.0),
                 ),
-                child: imageUrl.isNotEmpty
+                child: widget.imageUrl.isNotEmpty
                     ? Image.network(
-                        imageUrl,
+                        widget.imageUrl,
                         width: 270,
                         height: 150,
                         fit: BoxFit.cover,
@@ -84,7 +101,7 @@ class CardItem extends StatelessWidget {
                         child: SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Text(
-                            tagAndTitle,
+                            widget.tagAndTitle,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -97,8 +114,8 @@ class CardItem extends StatelessWidget {
                       ),
                     ),
                     Icon(
-                      isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                      color: isBookmarked ? Colors.blue : null,
+                      isPinned ? Icons.bookmark : Icons.bookmark_border,
+                      color: isPinned ? Theme.of(context).primaryColor : null,
                     ),
                   ],
                 ),
@@ -108,13 +125,13 @@ class CardItem extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 12.0),
                 child: Row(
                   children: [
-                    if (tags.isNotEmpty) ...tags.sublist(0, 1).map((tag) => Padding(
+                    if (widget.tags.isNotEmpty) ...widget.tags.sublist(0, 1).map((tag) => Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 2.0),
                       child: TagWithBorderRadius(tag),
                     )),
-                    if (tags.length > 1) ...[
+                    if (widget.tags.length > 1) ...[
                       SizedBox(width: 2),
-                      TagWithBorderRadius('+${tags.length - 1}'),
+                      TagWithBorderRadius('+${widget.tags.length - 1}'),
                     ],
                   ],
                 ),
@@ -126,7 +143,7 @@ class CardItem extends StatelessWidget {
                   children: [
                     Icon(Icons.schedule_outlined, size: 20, color: Colors.grey),
                     SizedBox(width: 4),
-                    Text('${timeToCook} Min',
+                    Text('${widget.timeToCook} Min',
                         style: TextStyle(
                             color: Colors.grey,
                             fontSize: 15,
@@ -134,7 +151,7 @@ class CardItem extends StatelessWidget {
                     SizedBox(width: 16),
                     Icon(Icons.article_outlined, size: 20, color: Colors.grey),
                     SizedBox(width: 4),
-                    Text('${numIngredients}',
+                    Text('${widget.numIngredients}',
                         style: TextStyle(
                             color: Colors.grey,
                             fontSize: 15,

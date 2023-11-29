@@ -139,35 +139,35 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   SizedBox(height: 16),
                   // Horizontal ListView for recipe cards
-                  Container(
-                    height: 300,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: bookmarkedRecipeIndices.length,
-                      itemExtent: 290,
-                      itemBuilder: (context, index) {
-                        final int recipeIndex = bookmarkedRecipeIndices[index];
+                  // Container(
+                  //   height: 300,
+                  //   child: ListView.builder(
+                  //     scrollDirection: Axis.horizontal,
+                  //     itemCount: bookmarkedRecipeIndices.length,
+                  //     itemExtent: 290,
+                  //     itemBuilder: (context, index) {
+                  //       final int recipeIndex = bookmarkedRecipeIndices[index];
 
-                        return Padding(
-                          padding: EdgeInsets.only(right: 8),
-                          child: CardItem(
-                            index: recipeIndex,
-                            imageUrl: imageUrls[recipeIndex],
-                            tagAndTitle: tagsAndTitles[recipeIndex],
-                            tags: tagsList[recipeIndex],
-                            timeToCook: timeToCook[recipeIndex],
-                            numIngredients: numIngredients[recipeIndex],
-                            isBookmarked: true,
-                            onTap: () {
-                              setState(() {
-                                bookmarkedRecipeIndices.remove(recipeIndex);
-                              });
-                            },
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                  //       return Padding(
+                  //         padding: EdgeInsets.only(right: 8),
+                  //         child: CardItem(
+                  //           index: recipeIndex,
+                  //           imageUrl: imageUrls[recipeIndex],
+                  //           tagAndTitle: tagsAndTitles[recipeIndex],
+                  //           tags: tagsList[recipeIndex],
+                  //           timeToCook: timeToCook[recipeIndex],
+                  //           numIngredients: numIngredients[recipeIndex],
+                  //           isBookmarked: true,
+                  //           onTap: () {
+                  //             setState(() {
+                  //               bookmarkedRecipeIndices.remove(recipeIndex);
+                  //             });
+                  //           },
+                  //         ),
+                  //       );
+                  //     },
+                  //   ),
+                  // ),
                 ],
               ),
             ),

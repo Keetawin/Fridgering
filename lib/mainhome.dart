@@ -248,12 +248,13 @@ class MainhomePageState extends State<MainhomePage> {
                                 padding: EdgeInsets.only(right: 8),
                                 child: CardItem(
                                   index: index,
+                                  user: user.isNotEmpty ? user[0] : {},
+                                  recipeId: recipes[index]['recipeID'],
                                   imageUrl: recipes[index]['image'][0],
                                   tagAndTitle: recipes[index]['name'],
                                   tags: recipes[index]['tags'],
                                   timeToCook: recipes[index]['cookTime'],
                                   numIngredients: ingredientsLenght[index],
-                                  isBookmarked: false,
                                   onTap: () {
                                     setState(() {});
                                   },
