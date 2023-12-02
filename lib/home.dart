@@ -36,7 +36,9 @@ class _HomeState extends State<Home> {
       RecipePage(
         userId: widget.userId,
       ),
-      FridgePage(),
+      FridgePage(
+        userId: widget.userId,
+      ),
       ProfilePage(
         userId: widget.userId,
         userImage: widget.userImage,

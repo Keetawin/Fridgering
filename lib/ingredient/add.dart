@@ -5,8 +5,15 @@ import 'dart:convert';
 
 class AddPage extends StatefulWidget {
   final String ingredientID;
+  final String? userId;
+  final String? ingredientName;
 
-  const AddPage({Key? key, required this.ingredientID}) : super(key: key);
+  const AddPage({
+    Key? key,
+    required this.ingredientID,
+    required this.userId,
+    required this.ingredientName,
+  }) : super(key: key);
 
   @override
   _IngredientPageState createState() => _IngredientPageState();
@@ -38,6 +45,34 @@ class _IngredientPageState extends State<AddPage> {
     } else {
       throw Exception(
           'Failed to fetch ingredient details. Status code: ${response.statusCode}');
+    }
+  }
+
+  Future<void> addToFridge() async {
+    final String apiUrl =
+        'https://fridgeringapi.fly.dev/user/${widget.userId}/ingredients';
+
+    final Map<String, dynamic> postData = {
+      'addedDate': DateTime.now().toIso8601String(),
+      'amount': int.parse(quantityValue),
+      'expiredDate': expirationDate,
+      'fcdId': int.parse(widget.ingredientID),
+      'name': widget.ingredientName,
+      'unit': selectedUnit,
+    };
+
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(postData),
+    );
+
+    if (response.statusCode == 200) {
+      // Ingredient added successfully, you can handle the response as needed
+      print('Ingredient added successfully');
+    } else {
+      // Handle the error, you can show a message or take appropriate action
+      print('Failed to add ingredient. Status code: ${response.statusCode}');
     }
   }
 
@@ -198,19 +233,21 @@ class _IngredientPageState extends State<AddPage> {
                                   ),
                                   SizedBox(height: 8.0),
                                   Text(
-                                    'Serving Size: 1 portion',
-                                    style: TextStyle(
-                                        fontSize: 18.0,
-                                        color: Colors.grey,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                  SizedBox(height: 10.0),
-                                  Text(
-                                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat.', // Replace with the actual description
+                                    ingredientData?['foodCategory']
+                                            ['description'] ??
+                                        'Unknown',
                                     style: TextStyle(
                                         fontSize: 18.0,
                                         color: Colors.black,
                                         fontWeight: FontWeight.w500),
+                                  ),
+                                  SizedBox(height: 22.0),
+                                  Text(
+                                    'Add Ingredient to Fridge', // Replace with the actual description
+                                    style: TextStyle(
+                                        fontSize: 20.0,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w600),
                                   ),
                                 ],
                               ),
@@ -224,7 +261,7 @@ class _IngredientPageState extends State<AddPage> {
                                     'Quantity',
                                     style: TextStyle(
                                         fontSize: 18.0,
-                                        fontWeight: FontWeight.w600),
+                                        fontWeight: FontWeight.w500),
                                   ),
                                   SizedBox(height: 8.0),
                                   Row(
@@ -238,16 +275,18 @@ class _IngredientPageState extends State<AddPage> {
                                                 Border.all(color: Colors.grey),
                                           ),
                                           child: TextFormField(
+                                            keyboardType: TextInputType.number,
                                             initialValue: '',
                                             decoration: InputDecoration(
                                               labelText: 'Amount',
-                                              hintText: '100,200,...',
+                                              hintText: '100, 200, ...',
                                               border: InputBorder.none,
                                               contentPadding:
                                                   EdgeInsets.symmetric(
                                                       horizontal: 16.0),
                                             ),
                                             onChanged: (value) {
+                                              // Handle the numeric input
                                               setState(() {
                                                 quantityValue = value;
                                               });
@@ -310,7 +349,7 @@ class _IngredientPageState extends State<AddPage> {
                                     'Expire',
                                     style: TextStyle(
                                         fontSize: 18.0,
-                                        fontWeight: FontWeight.w600),
+                                        fontWeight: FontWeight.w500),
                                   ),
                                   SizedBox(height: 12.0),
                                   InkWell(
@@ -371,19 +410,15 @@ class _IngredientPageState extends State<AddPage> {
                             ),
                             SizedBox(height: 16.0),
                             Container(
-                              width:
-                                  double.infinity, // Make the button full-width
-                              height: 56.0, // Adjust the height as needed
+                              width: double.infinity,
+                              height: 56.0,
                               child: ElevatedButton(
-                                onPressed: () {
-                                  // Add your functionality here
-                                },
+                                onPressed: addToFridge,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Theme.of(context)
-                                      .primaryColor, // Use the primary color
+                                  backgroundColor:
+                                      Theme.of(context).primaryColor,
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                        16.0), // Circular border radius
+                                    borderRadius: BorderRadius.circular(16.0),
                                   ),
                                 ),
                                 child: Text(

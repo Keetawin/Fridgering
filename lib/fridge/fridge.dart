@@ -4,7 +4,9 @@ import 'ingredient.dart';
 import '../ingredient/ingre.dart';
 
 class FridgePage extends StatefulWidget {
-  const FridgePage({Key? key}) : super(key: key);
+  final String? userId;
+
+  FridgePage({this.userId});
 
   @override
   _FridgePageState createState() => _FridgePageState();
@@ -53,7 +55,9 @@ class _FridgePageState extends State<FridgePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => Ingredient(),
+        builder: (context) => Ingredient(
+          userId: widget.userId,
+        ),
       ),
     );
   }

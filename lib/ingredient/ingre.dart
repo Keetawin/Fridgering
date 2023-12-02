@@ -6,7 +6,9 @@ import 'dart:convert';
 import 'dart:async';
 
 class Ingredient extends StatefulWidget {
-  const Ingredient({Key? key}) : super(key: key);
+  final String? userId;
+
+  Ingredient({this.userId});
 
   @override
   _FridgePageState createState() => _FridgePageState();
@@ -15,6 +17,7 @@ class Ingredient extends StatefulWidget {
 class _FridgePageState extends State<Ingredient> {
   String searchTerm = '';
   Timer? _debounce;
+  String? userId;
 
   List<Map<String, dynamic>> ingredients = [];
 
@@ -117,8 +120,10 @@ class _FridgePageState extends State<Ingredient> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                AddPage(ingredientID: ingredient['fdcId'].toString()),
+            builder: (context) => AddPage(
+                ingredientID: ingredient['fdcId'].toString(),
+                userId: widget.userId,
+                ingredientName: ingredient['description']),
           ),
         );
       },
