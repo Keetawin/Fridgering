@@ -20,6 +20,7 @@ class _IngredientPageState extends State<AddPage> {
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
+    String fdcId = widget.ingredient['fdcId'] ?? '';
 
     double caloriePercentage = 100.0;
     double proteinPercentage = 40.0;

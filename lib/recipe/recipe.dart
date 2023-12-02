@@ -17,6 +17,7 @@ class RecipePage extends StatefulWidget {
 class _RecipePageState extends State<RecipePage> {
   List<Map<String, dynamic>> recipes = [];
   List<Map<String, dynamic>> searchResults = [];
+  bool match = false;
 
   void _navigateToNotiScreen() {
     Navigator.push(
@@ -51,12 +52,16 @@ class _RecipePageState extends State<RecipePage> {
     _fetchRecipes();
   }
 
-  Future<void> _fetchRecipes() async {
+  Future<void> _fetchRecipes([String? nameQuery]) async {
     try {
-      final response = await http.get(
-        Uri.parse(
-            'https://fridgeringapi.fly.dev/recipes/search?userID=${widget.userId}&match=false'),
-      );
+      String apiUrl =
+          'https://fridgeringapi.fly.dev/recipes/search?userID=${widget.userId}&match=$match';
+
+      if (nameQuery != null) {
+        apiUrl += '&name=$nameQuery';
+      }
+
+      final response = await http.get(Uri.parse(apiUrl));
 
       if (response.statusCode == 200) {
         // Successfully fetched recipes
@@ -112,6 +117,7 @@ class _RecipePageState extends State<RecipePage> {
             ),
             SizedBox(height: 20),
 
+            // Search Field
             Padding(
               padding: EdgeInsets.only(right: 9),
               child: StandardSearchBar(
@@ -124,14 +130,30 @@ class _RecipePageState extends State<RecipePage> {
                           imageUrl.contains(query.toLowerCase());
                     }).toList();
                   });
+                  _fetchRecipes(query); // Fetch recipes based on the name query
                 },
                 hintText: 'Search...',
               ),
             ),
-
-            // Search Field
-
             SizedBox(height: 12),
+            Padding(
+              padding: EdgeInsets.only(right: 9),
+              child: Row(
+                children: [
+                  Checkbox(
+                    value: match,
+                    onChanged: (value) {
+                      setState(() {
+                        match = value!;
+                        _fetchRecipes(); // Fetch recipes without a name query
+                      });
+                    },
+                  ),
+                  SizedBox(width: 16),
+                  Text('Match ingredient in fridge'),
+                ],
+              ),
+            ),
 
             // Display search results or recipes
             Expanded(
@@ -148,7 +170,7 @@ class _RecipePageState extends State<RecipePage> {
                       _navigateToMenuScreen(index);
                     },
                     child: Padding(
-                      padding: EdgeInsets.only(left: 8.0, right: 12.0),
+                      padding: EdgeInsets.only(left: 9.0, right: 12.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [

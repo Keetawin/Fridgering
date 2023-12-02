@@ -17,21 +17,29 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   Future<Map<String, dynamic>?> _checkLoginStatus() async {
-    // Get the current user ID from Firebase
-    String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+    // Ensure that the user is signed in before attempting to get the userId
+    User? user = FirebaseAuth.instance.currentUser;
 
-    final response = await http.get(
-      Uri.parse('https://fridgeringapi.fly.dev/user/$userId'),
-    );
+    if (user != null) {
+      // Get the current user ID from Firebase
+      String userId = user.uid;
 
-    if (response.statusCode == 200) {
-      // User data is available
-      return jsonDecode(response.body);
-    } else if (response.statusCode == 404) {
-      // User not found
-      return null;
+      final response = await http.get(
+        Uri.parse('https://fridgeringapi.fly.dev/user/$userId'),
+      );
+
+      if (response.statusCode == 200) {
+        // User data is available
+        return jsonDecode(response.body);
+      } else if (response.statusCode == 404) {
+        // User not found
+        return null;
+      } else {
+        throw Exception('Failed to check login status');
+      }
     } else {
-      throw Exception('Failed to check login status');
+      // User is not signed in, return null
+      return null;
     }
   }
 
@@ -84,7 +92,7 @@ class MyApp extends StatelessWidget {
                 scaffoldBackgroundColor: Colors.white,
               ),
               home: Home(
-                userId: userData['userID'],
+                userId: userData['data']['userID'],
                 userImage: userData['data']['image'],
                 userName: userData['data']['name'],
               ),

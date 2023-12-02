@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import './add.dart';
-import '../notification/notification.dart';
 import 'package:standard_searchbar/standard_searchbar.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'dart:async';
 
 class Ingredient extends StatefulWidget {
   const Ingredient({Key? key}) : super(key: key);
@@ -11,69 +13,49 @@ class Ingredient extends StatefulWidget {
 }
 
 class _FridgePageState extends State<Ingredient> {
-  String selectedFilter = 'all';
   String searchTerm = '';
+  Timer? _debounce;
 
-  List<Map<String, String>> allIngredients = [
-    {
-      'quantity': '2 PCS',
-      'image': 'assets/images/pic1.jpg',
-      'name': 'Carrot',
-      'category': 'vegetable',
-      'datebuy': '18/11/23'
-    },
-    {
-      'quantity': '4 PCS',
-      'image': 'assets/images/pic2.jpg',
-      'name': 'Apple',
-      'category': 'fruit',
-      'datebuy': '11/11/23'
-    },
-    {
-      'quantity': '600 G',
-      'image': 'assets/images/pic3.jpg',
-      'name': 'Chicken',
-      'category': 'meat',
-      'datebuy': '9/11/23'
-    },
-    {
-      'quantity': '600 G',
-      'image': 'assets/images/pic1.jpg',
-      'name': 'Tomato',
-      'category': 'vegetable',
-      'datebuy': '12/11/23'
-    },
-    // Add more ingredients as needed
-  ];
+  List<Map<String, dynamic>> ingredients = [];
 
-  List<Map<String, String>> getFilteredIngredients() {
-    List<Map<String, String>> filteredList;
-
-    if (selectedFilter == 'all') {
-      filteredList = allIngredients;
-    } else {
-      filteredList = allIngredients
-          .where((ingredient) => ingredient['category'] == selectedFilter)
-          .toList();
-    }
-
-    if (searchTerm.isNotEmpty) {
-      filteredList = filteredList.where((ingredient) {
-        String name = ingredient['name']?.toLowerCase() ?? '';
-        return name.contains(searchTerm.toLowerCase());
-      }).toList();
-    }
-
-    return filteredList;
+  @override
+  void initState() {
+    super.initState();
+    _fetchIngredients();
   }
 
-  void _navigateToNotiScreen() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => NotificationPage(),
-      ),
-    );
+  Future<void> _fetchIngredients() async {
+    try {
+      final response = await http.get(
+        Uri.parse(
+            'https://fridgeringapi.fly.dev/common_ingredient/search?name=$searchTerm'),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        final List<dynamic> recipeList = data['data'];
+        setState(() {
+          ingredients = List<Map<String, dynamic>>.from(recipeList);
+        });
+      } else {
+        print(
+          'Failed to fetch ingredients. Status code: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  void _onSearchChanged(String query) {
+    // Debounce the search to reduce the number of requests
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      setState(() {
+        searchTerm = query;
+      });
+      _fetchIngredients();
+    });
   }
 
   @override
@@ -88,27 +70,11 @@ class _FridgePageState extends State<Ingredient> {
               horizontal: 36.0,
             ),
             child: StandardSearchBar(
-              onChanged: (query) {
-                setState(() {
-                  searchTerm = query;
-                });
-              },
+              onChanged: _onSearchChanged,
               hintText: 'Search...',
             ),
           ),
           SizedBox(height: 24.0),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                buildFilterBox('All', 'all'),
-                buildFilterBox('Vegetable', 'vegetable'),
-                buildFilterBox('Fruit', 'fruit'),
-                buildFilterBox('Meat', 'meat'),
-              ],
-            ),
-          ),
           Expanded(
             child: Padding(
               padding:
@@ -131,108 +97,84 @@ class _FridgePageState extends State<Ingredient> {
     );
   }
 
-  Widget buildFilterBox(String text, String filter) {
-    bool isSelected = selectedFilter == filter;
-    ThemeData theme = Theme.of(context);
-
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          selectedFilter = filter;
-        });
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 18.0,
-          vertical: 15.0,
-        ),
-        decoration: BoxDecoration(
-          color: isSelected ? theme.primaryColor : Colors.white,
-          borderRadius: BorderRadius.circular(15.0),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 3,
-                    blurRadius: 7,
-                    offset: Offset(0, 3),
-                  ),
-                ]
-              : [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-        ),
-        child: Text(
-          text,
-          style: TextStyle(
-            color: isSelected ? Colors.white : theme.primaryColor,
-            fontWeight: FontWeight.w500,
-            fontSize: 16.0,
-          ),
-        ),
-      ),
-    );
+  List<Map<String, dynamic>> getFilteredIngredients() {
+    return ingredients.where((ingredient) {
+      // Check if foodNutritients is not empty and has at least one element
+      if (ingredient['description'] != null &&
+          ingredient['description'].isNotEmpty) {
+        String name = ingredient['description'] ?? '';
+        return name.toLowerCase().contains(searchTerm.toLowerCase());
+      }
+      // If foodNutritients is empty or null, exclude this ingredient
+      return false;
+    }).toList();
   }
 
-  Widget buildIngredientCard(Map<String, String> ingredient) {
+  Widget buildIngredientCard(Map<String, dynamic> ingredient) {
     return GestureDetector(
       onTap: () {
-        // Navigate to the IngredientPage when the box is tapped
+        // Navigate to the AddPage with the ingredient
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => AddPage(ingredient: ingredient),
+            builder: (context) => AddPage(ingredient: ingredient['fdcId']),
           ),
         );
       },
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 12),
-        child: Container(
-          height: 253,
-          width: 150,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16.0),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
-                  spreadRadius: 2,
-                  blurRadius: 5,
-                  offset: Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+        padding: EdgeInsets.only(left: 9.0, right: 12.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Stack(
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(16.0),
-                    topRight: Radius.circular(16.0),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: Offset(0, 3),
+                      ),
+                    ],
                   ),
-                  child: Image.asset(
-                    ingredient['image'] ?? 'assets/images/default_image.jpg',
-                    height: 120,
-                    fit: BoxFit.cover,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: Image.network(
+                      ingredient['image'] ?? 'https://via.placeholder.com/150',
+                      height: 150,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
-                SizedBox(height: 8.0),
-                Text(
-                  ingredient['name'] ?? 'Unknown',
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold,
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    padding: EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(8.0),
+                        bottomRight: Radius.circular(8.0),
+                      ),
+                    ),
+                    child: Text(
+                      ingredient['description'] ?? 'Unknown',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ),
               ],
             ),
-          ),
+          ],
         ),
       ),
     );
