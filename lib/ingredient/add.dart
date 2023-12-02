@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:intl/intl.dart';
 
 class AddPage extends StatefulWidget {
   final String ingredientID;
@@ -35,7 +36,6 @@ class _IngredientPageState extends State<AddPage> {
   }
 
   Future<Map<String, dynamic>> _fetchIngredientData() async {
-    print('inID: ${widget.ingredientID}');
     final response = await http.get(
       Uri.parse(
           'https://fridgeringapi.fly.dev/common_ingredient/${widget.ingredientID}'),
@@ -95,11 +95,11 @@ class _IngredientPageState extends State<AddPage> {
       if (userResponse.statusCode == 200) {
         final Map<String, dynamic> userData = json.decode(userResponse.body);
         final Map<String, dynamic> userList = userData['data'];
+        final int ingredientIdAsInt = int.parse(widget.ingredientID);
 
         setState(() {
           isPinned = (userList['pinnedIngredients'] as List?)
-                  ?.contains(widget.ingredientID) ??
-              false;
+                    ?.contains(ingredientIdAsInt) ?? false;
         });
       } else {
         print(
@@ -118,7 +118,9 @@ class _IngredientPageState extends State<AddPage> {
     final Map<String, dynamic> postData = {
       'addedDate': DateTime.now().toIso8601String(),
       'amount': int.parse(quantityValue),
-      'expiredDate': expirationDate,
+      'expiredDate': expirationDate.isEmpty
+        ? null
+        : DateFormat('dd/MM/yyyy').parse(expirationDate).toIso8601String(),
       'fcdId': int.parse(widget.ingredientID),
       'name': widget.ingredientName,
       'unit': selectedUnit,

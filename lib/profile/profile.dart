@@ -119,7 +119,6 @@ Future<void> _loadRecipes() async {
         if (ingredientResponse.statusCode == 200) {
           final Map<String, dynamic> IngredientData = json.decode(ingredientResponse.body);
           final Map<String, dynamic> oneIngredient = IngredientData['data'];
-          print(oneIngredient);
             setState(() {
               ingredients.add(oneIngredient);
             });

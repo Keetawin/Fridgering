@@ -28,6 +28,8 @@ class FridgeListItem extends StatelessWidget {
     DateTime currentDate = DateTime.now();
     int daysLeft = expirationDate.difference(currentDate).inDays;
     int period = expirationDate.difference(dateBuyDateTime).inDays;
+
+    double lifePercentage = daysLeft >= 0 ? (daysLeft / period) : 0.0;
     return GestureDetector(
       onTap: onTap, 
     child: Padding(
@@ -149,17 +151,18 @@ class ExpirationLifeBar extends StatelessWidget {
     );
   }
 
-  Color _getLifeBarColor(double percentage) {
-    if (1 > percentage && percentage >= 0.6) {
-      return Colors.green;
-    } else if (0.6 > percentage && percentage >= 0.3) {
-      return Colors.orange;
-    } else if (0.3 > percentage && percentage >= 0.0) {
-      return Colors.red;
-    } else {
-      return Colors.grey; // You can set this to any color for an empty state
-    }
+Color _getLifeBarColor(double percentage) {
+  if (1 >= percentage && percentage >= 0.6) {
+    return Colors.green;
+  } else if (0.6 > percentage && percentage >= 0.3) {
+    return Colors.orange;
+  } else if (0.3 > percentage && percentage >= 0.0) {
+    return Colors.red;
+  } else {
+    return Colors.grey; // You can set this to any color for an empty state
   }
+}
+
 }
 
 class QuantityBox extends StatelessWidget {
