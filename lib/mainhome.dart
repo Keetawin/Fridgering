@@ -154,6 +154,183 @@ class MainhomePageState extends State<MainhomePage> {
     }
   }
 
+ void _showEditModal(BuildContext context, Map<String, dynamic> ingredient) {
+  String quantity = ingredient['amount'].toString() ?? '';
+  String selectedUnit = (ingredient['unit'] as String?)?.toUpperCase() ?? 'PCS';
+  List<String> parts = quantity.split(' ');
+
+  TextEditingController quantityController =
+      TextEditingController(text: parts.isNotEmpty ? parts[0] : '');
+  bool isDeleting = false;
+
+  showModalBottomSheet(
+    context: context,
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return Container(
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Edit Ingredient',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 20),
+                TextField(
+                  controller: quantityController,
+                  onChanged: (value) {
+                    setState(() {
+                      // Update the variable isDeleting based on the text field content
+                      isDeleting = value == '0';
+                    });
+                  },
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'Quantity',
+                    suffixText: selectedUnit,
+                  ),
+                ),
+                SizedBox(height: 20),
+                DropdownButtonFormField<String>(
+                  value: selectedUnit,
+                  onChanged: (String? newValue) {
+                    if (newValue != null) {
+                      setState(() {
+                        selectedUnit = newValue;
+                      });
+                    }
+                  },
+                  items: <String>['PCS', 'G', 'KG', 'L']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
+                SizedBox(height: 28),
+                ElevatedButton(
+                  onPressed: () {
+                    if (isDeleting || quantityController.text.isEmpty) {
+                      _deleteIngredientData(ingredient['fcdId']);
+                    } else {
+                      int? updatedAmount = int.tryParse(quantityController.text);
+                      if (updatedAmount != null) {
+                        // Example: Call a function to update the data
+                        _updateIngredientData(ingredient['fcdId'], updatedAmount, selectedUnit);
+                      } else {
+                        // Handle the case where parsing fails (e.g., non-numeric input)
+                        print('Invalid quantity input');
+                        return;
+                      }
+                    }
+
+                    Navigator.pop(context); // Close the modal
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: isDeleting || quantityController.text.isEmpty
+                        ? Color(0xFFFF6464)
+                        : Theme.of(context).primaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    textStyle: TextStyle(
+                      fontSize: 18.0,
+                    ),
+                  ),
+                  child: Container(
+                    margin: EdgeInsets.symmetric(horizontal: 36, vertical: 18),
+                    width: double.infinity,
+                    alignment: Alignment.center,
+                    child: Text(
+                      isDeleting || quantityController.text.isEmpty
+                          ? 'Delete'
+                          : 'Save',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        fontFamily: 'Poppins',
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 28),
+              ],
+            ),
+          );
+        },
+      );
+    },
+  );
+}
+
+void _updateIngredientData(int fdcId, int updatedAmount, String updatedUnit) async {
+  try {
+    // Create the updated ingredient data
+    Map<String, dynamic> updatedIngredientData = {
+      "amount": updatedAmount,
+      "unit": updatedUnit,
+    };
+
+    // Make an HTTP PUT request to update the ingredient data
+    final response = await http.put(
+      Uri.parse('https://fridgeringapi.fly.dev/user/${widget.userId}/ingredients/$fdcId'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(updatedIngredientData),
+    );
+
+    if (response.statusCode == 200) {
+      // Ingredient data updated successfully
+      print('Ingredient data updated successfully.');
+      // You can update the local state or perform any other actions as needed
+      // For example, you might want to reload the ingredient data
+      _loadIngredient();
+    } else {
+      // Failed to update ingredient data
+      print('Failed to update ingredient data. Status code: ${response.statusCode}');
+    }
+  } catch (e) {
+    // Handle other errors
+    print('Error: $e');
+  }
+}
+
+void _deleteIngredientData(int fcdId) async {
+  try {
+    // Make an HTTP DELETE request to delete the ingredient data
+    final response = await http.delete(
+      Uri.parse('https://fridgeringapi.fly.dev/user/${widget.userId}/ingredients/$fcdId'),
+    );
+
+    if (response.statusCode == 200) {
+      // Ingredient data deleted successfully
+      print('Ingredient data deleted successfully.');
+      // You can update the local state or perform any other actions as needed
+      // For example, you might want to reload the ingredient data
+      _loadIngredient();
+    } else {
+      // Failed to delete ingredient data
+      print('Failed to delete ingredient data. Status code: ${response.statusCode}');
+    }
+  } catch (e) {
+    // Handle other errors
+    print('Error: $e');
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -316,6 +493,7 @@ class MainhomePageState extends State<MainhomePage> {
                             imageUrl: ingredientsimage[index],
                             addedDate: ingredients[index]['addedDate'],
                             expiredDate: ingredients[index]['expiredDate'],
+                            onTap: () => _showEditModal(context, ingredients[index]),
                           ),
                         ),
                       ),

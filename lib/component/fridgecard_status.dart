@@ -8,6 +8,7 @@ class FridgeListItem extends StatelessWidget {
   final String imageUrl;
   final Map<String, dynamic> addedDate;
   final Map<String, dynamic> expiredDate;
+  final VoidCallback onTap;
 
   FridgeListItem({
     required this.title,
@@ -16,6 +17,7 @@ class FridgeListItem extends StatelessWidget {
     required this.imageUrl,
     required this.addedDate,
     required this.expiredDate,
+    required this.onTap,
   });
 
   @override
@@ -26,8 +28,9 @@ class FridgeListItem extends StatelessWidget {
     DateTime currentDate = DateTime.now();
     int daysLeft = expirationDate.difference(currentDate).inDays;
     int period = expirationDate.difference(dateBuyDateTime).inDays;
-
-    return Padding(
+    return GestureDetector(
+      onTap: onTap, 
+    child: Padding(
       padding: EdgeInsets.only(
         left: 8, right: 8, top: 8, bottom: 8,
       ),
@@ -105,7 +108,7 @@ class FridgeListItem extends StatelessWidget {
           ),
         ),
       ),
-    );
+    ),);
   }
 }
 
