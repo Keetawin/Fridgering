@@ -49,7 +49,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
         List<String> pinnedRecipesData = List<String>.from(userList['pinnedRecipes'] ?? []);
         List<int> pinnedIngredientData = List<int>.from(userList['pinnedIngredients'] ?? []);
-        print(pinnedIngredientData);
 
         setState(() {
           pinnedIngredients = pinnedIngredientData;
@@ -80,7 +79,6 @@ Future<void> _loadRecipes() async {
       if (recipesResponse.statusCode == 200) {
         final Map<String, dynamic> recipesData = json.decode(recipesResponse.body);
         final Map<String, dynamic> oneRecipes = recipesData['data'];
-
           setState(() {
             recipes.add(oneRecipes);
           });
@@ -113,7 +111,6 @@ Future<void> _loadRecipes() async {
   Future<void> _loadIngredient() async {
     try {
       final List<int> restrictions = pinnedIngredients.isNotEmpty ? pinnedIngredients : [];
-      print('pinnedIngredients: $pinnedIngredients');
 
       for (int restriction in restrictions) {
         final ingredientResponse = await http.get(
@@ -297,6 +294,9 @@ Future<void> _loadRecipes() async {
                         (index) => FridgeListItem(
                           title: ingredients[index]['description'],
                           imageUrl: ingredients[index]['image'],
+                          ingredientID: ingredients[index]['fdcId'].toString(),
+                          userId: widget.userId,
+                          onTap: refreshProfilePage,
                         ),
                       ),
                     ),

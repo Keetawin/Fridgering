@@ -519,7 +519,7 @@ class FridgeList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 230, // Adjust the height as needed
+      height: 250, // Adjust the height as needed
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: fridgeItems.length,

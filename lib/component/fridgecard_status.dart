@@ -80,22 +80,24 @@ class FridgeListItem extends StatelessWidget {
                   color: Colors.grey,
                 ),
               ),
-              SizedBox(height: 6.0),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 3.0),
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w600,
-                      overflow: TextOverflow.ellipsis,
+              SizedBox(height: 0.0),
+              Flexible(
+                child: Container(
+                  padding: EdgeInsets.all(2.0),
+                  child: Center(
+                    child: Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                  ),
                 ),
               ),
-              SizedBox(height: 6.0),
+                      
+              SizedBox(height: 0.0),
               Text(
                 DateFormat('dd/MM/yy').format(expirationDate),
                 style: TextStyle(

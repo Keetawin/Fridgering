@@ -20,7 +20,7 @@ class AddPage extends StatefulWidget {
 }
 
 class _IngredientPageState extends State<AddPage> {
-  bool isBookmarked = false;
+  bool isPinned = false;
   String expirationDate = 'DD/MM/YYYY';
   String quantityValue = ' ';
   String selectedUnit = ' ';
@@ -30,10 +30,12 @@ class _IngredientPageState extends State<AddPage> {
   @override
   void initState() {
     super.initState();
+    _loadUser();
     _ingredientDataFuture = _fetchIngredientData();
   }
 
   Future<Map<String, dynamic>> _fetchIngredientData() async {
+    print('inID: ${widget.ingredientID}');
     final response = await http.get(
       Uri.parse(
           'https://fridgeringapi.fly.dev/common_ingredient/${widget.ingredientID}'),
@@ -45,6 +47,60 @@ class _IngredientPageState extends State<AddPage> {
     } else {
       throw Exception(
           'Failed to fetch ingredient details. Status code: ${response.statusCode}');
+    }
+  }
+
+  Future<void> _togglePinStatus() async {
+    try {
+      final userId = widget.userId;
+      final ingredientID = widget.ingredientID;
+      final baseUrl = 'https://fridgeringapi.fly.dev/user/$userId/pin_ingredients/$ingredientID';
+
+      if (isPinned) {
+        // If already pinned, send a DELETE request to unpin
+        final response = await http.delete(Uri.parse(baseUrl));
+
+        if (response.statusCode == 200) {
+          setState(() {
+            isPinned = false;
+          });
+        } else {
+          print('Failed to unpin ingredient. Status code: ${response.statusCode}');
+        }
+      } else {
+        // If not pinned, send a POST request to pin
+        final response = await http.post(Uri.parse(baseUrl));
+
+        if (response.statusCode == 200) {
+          setState(() {
+            isPinned = true;
+          });
+        } else {
+          print('Failed to pin ingredient. Status code: ${response.statusCode}');
+        }
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  Future<void> _loadUser() async {
+    try {
+      final userResponse = await http.get(Uri.parse('https://fridgeringapi.fly.dev/user/${widget.userId}'));
+
+      if (userResponse.statusCode == 200) {
+        final Map<String, dynamic> userData = json.decode(userResponse.body);
+        final Map<String, dynamic> userList = userData['data'];
+
+        setState(() {
+          isPinned = (userList['pinnedIngredients'] as List?)?.contains(widget.ingredientID) ?? false;
+        });
+      } else {
+        print('Failed to load user data. Status code: ${userResponse.statusCode}');
+      }
+    } catch (e) {
+      // Handle other errors
+      print('Error: $e');
     }
   }
 
@@ -158,17 +214,12 @@ class _IngredientPageState extends State<AddPage> {
                                 Padding(
                                   padding: const EdgeInsets.only(bottom: 4.0),
                                   child: GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        isBookmarked = !isBookmarked;
-                                      });
-                                      print('Bookmark tapped');
-                                    },
+                                    onTap: _togglePinStatus,
                                     child: Icon(
-                                      isBookmarked
+                                      isPinned
                                           ? Icons.bookmark_rounded
                                           : Icons.bookmark_outline_rounded,
-                                      color: isBookmarked
+                                      color: isPinned
                                           ? theme.primaryColor
                                           : Colors.grey,
                                       size: 40.0,

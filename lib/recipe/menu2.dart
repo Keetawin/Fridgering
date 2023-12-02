@@ -401,8 +401,9 @@ class _MenuState extends State<Menu> {
                               child: GestureDetector(
                                 onTap: _togglePinStatus, // Call the toggle method here
                                 child: Icon(
-                                  isPinned ? Icons.bookmark : Icons.bookmark_border,
-                                  color: isPinned ? Theme.of(context).primaryColor : null,
+                                  isPinned ? Icons.bookmark_rounded : Icons.bookmark_outline_rounded,
+                                  color: isPinned ? Theme.of(context).primaryColor : Colors.grey,
+                                  size: 40.0,
                                 ),
                               ),
                             ),
