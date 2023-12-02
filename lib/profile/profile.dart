@@ -226,7 +226,7 @@ Future<void> _loadRecipes() async {
                     height: 300,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: recipes.length > 5 ? 5 : recipes.length,
+                      itemCount: recipes.length,
                       itemExtent: 290,
                       itemBuilder: (context, index) {
                         if (index < recipes.length && index < ingredientsLenght.length) {
