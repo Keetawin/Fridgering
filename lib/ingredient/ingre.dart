@@ -117,7 +117,8 @@ class _FridgePageState extends State<Ingredient> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => AddPage(ingredient: ingredient['fdcId']),
+            builder: (context) =>
+                AddPage(ingredientID: ingredient['fdcId'].toString()),
           ),
         );
       },
