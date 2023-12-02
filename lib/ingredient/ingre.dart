@@ -27,6 +27,12 @@ class _FridgePageState extends State<Ingredient> {
     _fetchIngredients();
   }
 
+  @override
+  void dispose() {
+    // Cancel any active timers or listeners here
+    super.dispose();
+  }
+
   Future<void> _fetchIngredients() async {
     try {
       final response = await http.get(
@@ -34,19 +40,25 @@ class _FridgePageState extends State<Ingredient> {
             'https://fridgeringapi.fly.dev/common_ingredient/search?name=$searchTerm'),
       );
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = jsonDecode(response.body);
-        final List<dynamic> recipeList = data['data'];
-        setState(() {
-          ingredients = List<Map<String, dynamic>>.from(recipeList);
-        });
-      } else {
-        print(
-          'Failed to fetch ingredients. Status code: ${response.statusCode}',
-        );
+      if (mounted) {
+        // Check if the widget is still mounted before calling setState
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> data = jsonDecode(response.body);
+          final List<dynamic> recipeList = data['data'];
+          setState(() {
+            ingredients = List<Map<String, dynamic>>.from(recipeList);
+          });
+        } else {
+          print(
+            'Failed to fetch ingredients. Status code: ${response.statusCode}',
+          );
+        }
       }
     } catch (e) {
-      print('Error: $e');
+      if (mounted) {
+        // Check if the widget is still mounted before calling setState
+        print('Error: $e');
+      }
     }
   }
 
@@ -82,15 +94,30 @@ class _FridgePageState extends State<Ingredient> {
             child: Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24),
-              child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 8.0,
-                  mainAxisSpacing: 20.0,
-                ),
-                itemCount: getFilteredIngredients().length,
-                itemBuilder: (context, index) {
-                  return buildIngredientCard(getFilteredIngredients()[index]);
+              child: FutureBuilder(
+                future: _fetchIngredients(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    // ถ้า Future ยังไม่เสร็จสิ้น แสดง Loading Indicator
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    // ถ้าเกิดข้อผิดพลาด
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else {
+                    // ถ้า Future เสร็จสิ้น แสดงข้อมูล
+                    return GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 8.0,
+                        mainAxisSpacing: 20.0,
+                      ),
+                      itemCount: getFilteredIngredients().length,
+                      itemBuilder: (context, index) {
+                        return buildIngredientCard(
+                            getFilteredIngredients()[index]);
+                      },
+                    );
+                  }
                 },
               ),
             ),

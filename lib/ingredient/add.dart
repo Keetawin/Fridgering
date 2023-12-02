@@ -54,7 +54,8 @@ class _IngredientPageState extends State<AddPage> {
     try {
       final userId = widget.userId;
       final ingredientID = widget.ingredientID;
-      final baseUrl = 'https://fridgeringapi.fly.dev/user/$userId/pin_ingredients/$ingredientID';
+      final baseUrl =
+          'https://fridgeringapi.fly.dev/user/$userId/pin_ingredients/$ingredientID';
 
       if (isPinned) {
         // If already pinned, send a DELETE request to unpin
@@ -65,7 +66,8 @@ class _IngredientPageState extends State<AddPage> {
             isPinned = false;
           });
         } else {
-          print('Failed to unpin ingredient. Status code: ${response.statusCode}');
+          print(
+              'Failed to unpin ingredient. Status code: ${response.statusCode}');
         }
       } else {
         // If not pinned, send a POST request to pin
@@ -76,7 +78,8 @@ class _IngredientPageState extends State<AddPage> {
             isPinned = true;
           });
         } else {
-          print('Failed to pin ingredient. Status code: ${response.statusCode}');
+          print(
+              'Failed to pin ingredient. Status code: ${response.statusCode}');
         }
       }
     } catch (e) {
@@ -86,17 +89,21 @@ class _IngredientPageState extends State<AddPage> {
 
   Future<void> _loadUser() async {
     try {
-      final userResponse = await http.get(Uri.parse('https://fridgeringapi.fly.dev/user/${widget.userId}'));
+      final userResponse = await http.get(
+          Uri.parse('https://fridgeringapi.fly.dev/user/${widget.userId}'));
 
       if (userResponse.statusCode == 200) {
         final Map<String, dynamic> userData = json.decode(userResponse.body);
         final Map<String, dynamic> userList = userData['data'];
 
         setState(() {
-          isPinned = (userList['pinnedIngredients'] as List?)?.contains(widget.ingredientID) ?? false;
+          isPinned = (userList['pinnedIngredients'] as List?)
+                  ?.contains(widget.ingredientID) ??
+              false;
         });
       } else {
-        print('Failed to load user data. Status code: ${userResponse.statusCode}');
+        print(
+            'Failed to load user data. Status code: ${userResponse.statusCode}');
       }
     } catch (e) {
       // Handle other errors
@@ -124,8 +131,11 @@ class _IngredientPageState extends State<AddPage> {
     );
 
     if (response.statusCode == 200) {
-      // Ingredient added successfully, you can handle the response as needed
+      // Ingredient added successfully, navigate to the fridge page
       print('Ingredient added successfully');
+
+      // Use Navigator to go to the fridge page
+      Navigator.popUntil(context, (route) => route.isFirst);
     } else {
       // Handle the error, you can show a message or take appropriate action
       print('Failed to add ingredient. Status code: ${response.statusCode}');
