@@ -218,34 +218,61 @@ Future<void> _loadRecipes() async {
                   ),
                   SizedBox(height: 16),
                   //Horizontal ListView for recipe cards
-                  Container(
-                    height: 300,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: recipes.length,
-                      itemExtent: 290,
-                      itemBuilder: (context, index) {
-                        if (index < recipes.length && index < ingredientsLenght.length) {
-                          return Padding(
-                            padding: EdgeInsets.only(right: 8),
-                            child: CardItem(
-                              index: index,
-                              user: user.isNotEmpty ? user[0] : {},
-                              recipeId: recipes[index]['recipeID'],
-                              imageUrl: recipes[index]['image'][0],
-                              tagAndTitle: recipes[index]['name'],
-                              tags: recipes[index]['tags'],
-                              timeToCook: recipes[index]['cookTime'],
-                              numIngredients: ingredientsLenght[index],
-                              onTap: refreshProfilePage,
+                  recipes.isEmpty
+                    ? Container(
+                      padding: EdgeInsets.only(right: 20),
+                        height: 190, // Adjust the height as needed
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              'You don\'t have any bookmarked recipes.',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                          );
-                        } else {
-                          return SizedBox.shrink(); // Or some placeholder if data is not available
-                        }
-                      },
-                    ),
-                  )
+                            Text(
+                              'Explore and bookmark recipes to your collection!',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      )
+                    : Container(
+                        height: 300,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: recipes.length,
+                          itemExtent: 290,
+                          itemBuilder: (context, index) {
+                            if (index < recipes.length && index < ingredientsLenght.length) {
+                              return Padding(
+                                padding: EdgeInsets.only(right: 8),
+                                child: CardItem(
+                                  index: index,
+                                  user: user.isNotEmpty ? user[0] : {},
+                                  recipeId: recipes[index]['recipeID'],
+                                  imageUrl: recipes[index]['image'][0],
+                                  tagAndTitle: recipes[index]['name'],
+                                  tags: recipes[index]['tags'],
+                                  timeToCook: recipes[index]['cookTime'],
+                                  numIngredients: ingredientsLenght[index],
+                                  onTap: refreshProfilePage,
+                                ),
+                              );
+                            } else {
+                              return SizedBox.shrink(); // Or some placeholder if data is not available
+                            }
+                          },
+                        ),
+                      ),
                 ],
               ),
             ),
@@ -284,22 +311,49 @@ Future<void> _loadRecipes() async {
                     ],
                   ),
                   SizedBox(height: 16),
-                  Padding(
-                    // Add padding to the FridgeList
-                    padding: EdgeInsets.only(left: 36),
-                    child: FridgeList(
-                      fridgeItems: List.generate(
-                        ingredients.length,
-                        (index) => FridgeListItem(
-                          title: ingredients[index]['description'],
-                          imageUrl: ingredients[index]['image'],
-                          ingredientID: ingredients[index]['fdcId'].toString(),
-                          userId: widget.userId,
-                          onTap: refreshProfilePage,
+                   ingredients.isEmpty
+                    ? Container(
+                        padding: EdgeInsets.only(left: 36,right: 20),
+                        height: 190, // Adjust the height as needed
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              'You don\'t have any bookmarked ingredients.',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            Text(
+                              'Explore and add ingredients to your collection!',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      )
+                    : Padding(
+                        // Add padding to the FridgeList
+                        padding: EdgeInsets.only(left: 36),
+                        child: FridgeList(
+                          fridgeItems: List.generate(
+                            ingredients.length,
+                            (index) => FridgeListItem(
+                              title: ingredients[index]['description'],
+                              imageUrl: ingredients[index]['image'],
+                              ingredientID: ingredients[index]['fdcId'].toString(),
+                              userId: widget.userId,
+                              onTap: refreshProfilePage,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
                   SizedBox(height: 16),
                 ],
               ),

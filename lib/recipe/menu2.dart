@@ -49,7 +49,6 @@ class _MenuState extends State<Menu> {
 
   @override
   void initState() {
-    print(widget.userID);
     super.initState();
     _fetchRecipes();
     _loadUser();

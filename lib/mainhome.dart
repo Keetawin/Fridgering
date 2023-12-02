@@ -413,37 +413,66 @@ void _deleteIngredientData(int fcdId) async {
                       ),
                       SizedBox(height: 16),
                       // Horizontal ListView for recipe cards
-                      Container(
-                        height: 300,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: recipes.length > 5 ? 5 : recipes.length,
-                          itemExtent: 290,
-                          itemBuilder: (context, index) {
-                            if (index < recipes.length && index < ingredientsLenght.length) {
-                              return Padding(
-                                padding: EdgeInsets.only(right: 8),
-                                child: CardItem(
-                                  index: index,
-                                  user: user.isNotEmpty ? user[0] : {},
-                                  recipeId: recipes[index]['recipeID'],
-                                  imageUrl: recipes[index]['image'][0],
-                                  tagAndTitle: recipes[index]['name'],
-                                  tags: recipes[index]['tags'],
-                                  timeToCook: recipes[index]['cookTime'],
-                                  numIngredients: ingredientsLenght[index],
-                                  onTap: () {
-                                    setState(() {});
-                                  },
+                      Center(
+                        child: recipes.isEmpty
+                            ? Container(
+                                height: 290,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'You don\'t have any recipes.',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.grey,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    Text(
+                                      'Explore and add recipes to your collection!',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.grey,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
                                 ),
-                              );
-                            } else {
-                              return SizedBox.shrink(); // Or some placeholder if data is not available
-                            }
-                          },
-                        ),
-                      )
-                    ],
+                              )
+                            
+                            : Container(
+                                      height: 290,
+                                      child: ListView.builder(
+                                        scrollDirection: Axis.horizontal,
+                                        itemCount: recipes.length > 5 ? 5 : recipes.length,
+                                        itemExtent: 290,
+                                        itemBuilder: (context, index) {
+                                          if (index < recipes.length && index < ingredientsLenght.length) {
+                                            return Padding(
+                                              padding: EdgeInsets.only(right: 8),
+                                              child: CardItem(
+                                                index: index,
+                                                user: user.isNotEmpty ? user[0] : {},
+                                                recipeId: recipes[index]['recipeID'],
+                                                imageUrl: recipes[index]['image'][0],
+                                                tagAndTitle: recipes[index]['name'],
+                                                tags: recipes[index]['tags'],
+                                                timeToCook: recipes[index]['cookTime'],
+                                                numIngredients: ingredientsLenght[index],
+                                                onTap: () {
+                                                  setState(() {});
+                                                },
+                                              ),
+                                            );
+                                          } else {
+                                            return SizedBox.shrink(); // Or some placeholder if data is not available
+                                          }
+                                        },
+                                      ),
+                                ),
+                              ),
+                            ],
                   ),
                 ),
                 Container(
@@ -452,7 +481,7 @@ void _deleteIngredientData(int fcdId) async {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(height: 20),
+                      SizedBox(height: 16),
                       Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -483,20 +512,46 @@ void _deleteIngredientData(int fcdId) async {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      FridgeList(
-                        fridgeItems: List.generate(
-                          ingredients.length,
-                          (index) => FridgeListItem(
-                            title: ingredients[index]['name'],
-                            quantity: ingredients[index]['amount'],
-                            unit: ingredients[index]['unit'],
-                            imageUrl: ingredientsimage[index],
-                            addedDate: ingredients[index]['addedDate'],
-                            expiredDate: ingredients[index]['expiredDate'],
-                            onTap: () => _showEditModal(context, ingredients[index]),
+                      ingredients.isEmpty
+                        ? Container(
+                            height: 190, // Adjust the height as needed
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'You don\'t have any ingredients.',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                Text(
+                                  'Add some to get started!',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          )
+                        : FridgeList(
+                            fridgeItems: List.generate(
+                              ingredients.length,
+                              (index) => FridgeListItem(
+                                title: ingredients[index]['name'],
+                                quantity: ingredients[index]['amount'],
+                                unit: ingredients[index]['unit'],
+                                imageUrl: ingredientsimage[index],
+                                addedDate: ingredients[index]['addedDate'],
+                                expiredDate: ingredients[index]['expiredDate'],
+                                onTap: () => _showEditModal(context, ingredients[index]),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
                       SizedBox(height: 16),
                     ],
                   ),
@@ -510,7 +565,6 @@ void _deleteIngredientData(int fcdId) async {
     );
   }
 }
-
 class FridgeList extends StatelessWidget {
   final List<FridgeListItem> fridgeItems;
 
@@ -518,14 +572,17 @@ class FridgeList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 250, // Adjust the height as needed
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: fridgeItems.length,
-        itemBuilder: (context, index) {
-          return fridgeItems[index];
-        },
+    return Directionality(
+      textDirection: TextDirection.ltr, // or TextDirection.rtl, depending on your app's direction
+      child: Container(
+        height: 250, // Adjust the height as needed
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: fridgeItems.length,
+          itemBuilder: (context, index) {
+            return fridgeItems[index];
+          },
+        ),
       ),
     );
   }

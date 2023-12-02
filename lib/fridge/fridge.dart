@@ -340,22 +340,51 @@ void _showEditModal(BuildContext context, Map<String, dynamic> ingredient) {
           // ),
           SizedBox(height: 20.0),
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 8.0,
-                  mainAxisSpacing: 20.0,
-                  childAspectRatio: 148 / 240,
+          child: ingredients.isEmpty
+              ? Container(
+                  height: 480, // Adjust the height as needed
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        'You don\'t have any ingredients.',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        'Add some to get started!',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                )
+              : Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: GridView.builder(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 8.0,
+                      mainAxisSpacing: 20.0,
+                      childAspectRatio: 148 / 240,
+                    ),
+                    itemCount: ingredients.length,
+                    itemBuilder: (context, index) {
+                      return buildIngredientCard(
+                        ingredients[index],
+                        ingredientsimage[index],
+                      );
+                    },
+                  ),
                 ),
-                itemCount: ingredients.length,
-                itemBuilder: (context, index) {
-                  return buildIngredientCard(ingredients[index], ingredientsimage[index]);
-                },
               ),
-            ),
-          ),
         ],
       ),
     );

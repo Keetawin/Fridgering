@@ -3,9 +3,6 @@ import './mainhome.dart';
 import './recipe/recipe.dart';
 import './fridge/fridge.dart';
 import './profile/profile.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
 class Home extends StatefulWidget {
   final String? userId;
   final String? userImage;

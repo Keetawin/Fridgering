@@ -33,18 +33,18 @@ class _CardItemState extends State<CardItem> {
 
   @override
   void initState() {
-  super.initState();
-  WidgetsBinding.instance!.addPostFrameCallback((_) {
-    if (widget.user.isNotEmpty) {
-      // Check if the current recipeId is in the list of pinnedRecipes
-      bool isRecipePinned = widget.user['pinnedRecipes']?.contains(widget.recipeId) ?? false;
+    super.initState();
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      if (widget.user.isNotEmpty) {
+        // Check if the current recipeId is in the list of pinnedRecipes
+        bool isRecipePinned = widget.user['pinnedRecipes']?.contains(widget.recipeId) ?? false;
 
-      setState(() {
-        isPinned = isRecipePinned;
-      });
-    }
-  });
-}
+        setState(() {
+          isPinned = isRecipePinned;
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,109 +74,112 @@ class _CardItemState extends State<CardItem> {
         }
         widget.onTap();
       },
-      child: Container(
-        width: 270,
-        margin: EdgeInsets.only(right: 4),
-        child: Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.0),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(12.0),
-                  topRight: Radius.circular(12.0),
+      child: Directionality(
+        textDirection: TextDirection.ltr,
+        child: Container(
+          width: 270,
+          margin: EdgeInsets.only(right: 4),
+          child: Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(12.0),
+                    topRight: Radius.circular(12.0),
+                  ),
+                  child: widget.imageUrl.isNotEmpty
+                      ? Image.network(
+                          widget.imageUrl,
+                          width: 270,
+                          height: 150,
+                          fit: BoxFit.cover,
+                        )
+                      : Image.asset(
+                          'assets/default.png', // Replace with the path to your default image asset
+                          width: 270,
+                          height: 150,
+                          fit: BoxFit.cover,
+                        ),
                 ),
-                child: widget.imageUrl.isNotEmpty
-                    ? Image.network(
-                        widget.imageUrl,
-                        width: 270,
-                        height: 150,
-                        fit: BoxFit.cover,
-                      )
-                    : Image.asset(
-                        'assets/default.png', // Replace with the path to your default image asset
-                        width: 270,
-                        height: 150,
-                        fit: BoxFit.cover,
-                      ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(
-                  left: 16.0,
-                  top: 20.0,
-                  right: 16.0,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Flexible(
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Text(
-                            widget.tagAndTitle,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w600,
-                              fontFamily: 'Poppins',
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 16.0,
+                    top: 20.0,
+                    right: 16.0,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Text(
+                              widget.tagAndTitle,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Poppins',
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    Icon(
-                      isPinned ? Icons.bookmark : Icons.bookmark_border,
-                      color: isPinned ? Theme.of(context).primaryColor : null,
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 18),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: Row(
-                  children: [
-                    if (widget.tags.isNotEmpty) ...widget.tags.sublist(0, 1).map((tag) => Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                      child: TagWithBorderRadius(tag),
-                    )),
-                    if (widget.tags.length > 1) ...[
-                      SizedBox(width: 2),
-                      TagWithBorderRadius('+${widget.tags.length - 1}'),
+                      Icon(
+                        isPinned ? Icons.bookmark : Icons.bookmark_border,
+                        color: isPinned ? Theme.of(context).primaryColor : null,
+                      ),
                     ],
-                  ],
+                  ),
                 ),
-              ),
-              SizedBox(height: 14),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Row(
-                  children: [
-                    Icon(Icons.schedule_outlined, size: 20, color: Colors.grey),
-                    SizedBox(width: 4),
-                    Text('${widget.timeToCook} Min',
-                        style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500)),
-                    SizedBox(width: 16),
-                    Icon(Icons.article_outlined, size: 20, color: Colors.grey),
-                    SizedBox(width: 4),
-                    Text('${widget.numIngredients}',
-                        style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500)),
-                  ],
+                SizedBox(height: 18),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: Row(
+                    children: [
+                      if (widget.tags.isNotEmpty) ...widget.tags.sublist(0, 1).map((tag) => Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                        child: TagWithBorderRadius(tag),
+                      )),
+                      if (widget.tags.length > 1) ...[
+                        SizedBox(width: 2),
+                        TagWithBorderRadius('+${widget.tags.length - 1}'),
+                      ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+                SizedBox(height: 14),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Row(
+                    children: [
+                      Icon(Icons.schedule_outlined, size: 20, color: Colors.grey),
+                      SizedBox(width: 4),
+                      Text('${widget.timeToCook} Min',
+                          style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500)),
+                      SizedBox(width: 16),
+                      Icon(Icons.article_outlined, size: 20, color: Colors.grey),
+                      SizedBox(width: 4),
+                      Text('${widget.numIngredients}',
+                          style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

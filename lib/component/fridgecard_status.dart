@@ -37,7 +37,7 @@ class FridgeListItem extends StatelessWidget {
         left: 8, right: 8, top: 8, bottom: 8,
       ),
       child: Container(
-        height: 200,
+        height: 190,
         width: 140,
         child: Container(
           decoration: BoxDecoration(
