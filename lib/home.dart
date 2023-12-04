@@ -3,6 +3,7 @@ import './mainhome.dart';
 import './recipe/recipe.dart';
 import './fridge/fridge.dart';
 import './profile/profile.dart';
+
 class Home extends StatefulWidget {
   final String? userId;
   final String? userImage;
@@ -40,6 +41,7 @@ class _HomeState extends State<Home> {
         userId: widget.userId,
         userImage: widget.userImage,
         userName: widget.userName,
+        userEmail: widget.userEmail,
       ),
     ];
   }

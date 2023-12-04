@@ -37,7 +37,8 @@ class _CardItemState extends State<CardItem> {
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       if (widget.user.isNotEmpty) {
         // Check if the current recipeId is in the list of pinnedRecipes
-        bool isRecipePinned = widget.user['pinnedRecipes']?.contains(widget.recipeId) ?? false;
+        bool isRecipePinned =
+            widget.user['pinnedRecipes']?.contains(widget.recipeId) ?? false;
 
         setState(() {
           isPinned = isRecipePinned;
@@ -48,7 +49,6 @@ class _CardItemState extends State<CardItem> {
 
   @override
   Widget build(BuildContext context) {
-
     return GestureDetector(
       onTap: () async {
         final result = await Navigator.push(
@@ -62,6 +62,8 @@ class _CardItemState extends State<CardItem> {
               recipeTags: widget.tags.cast<String>(),
               recipeTime: widget.timeToCook,
               isPinned: isPinned,
+              recipeInstructions: widget.user['recipes'][widget.index]
+                  ['instructions'],
             ),
           ),
         );
@@ -144,10 +146,12 @@ class _CardItemState extends State<CardItem> {
                   padding: const EdgeInsets.symmetric(horizontal: 12.0),
                   child: Row(
                     children: [
-                      if (widget.tags.isNotEmpty) ...widget.tags.sublist(0, 1).map((tag) => Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                        child: TagWithBorderRadius(tag),
-                      )),
+                      if (widget.tags.isNotEmpty)
+                        ...widget.tags.sublist(0, 1).map((tag) => Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 2.0),
+                              child: TagWithBorderRadius(tag),
+                            )),
                       if (widget.tags.length > 1) ...[
                         SizedBox(width: 2),
                         TagWithBorderRadius('+${widget.tags.length - 1}'),
@@ -160,7 +164,8 @@ class _CardItemState extends State<CardItem> {
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Row(
                     children: [
-                      Icon(Icons.schedule_outlined, size: 20, color: Colors.grey),
+                      Icon(Icons.schedule_outlined,
+                          size: 20, color: Colors.grey),
                       SizedBox(width: 4),
                       Text('${widget.timeToCook} Min',
                           style: TextStyle(
@@ -168,7 +173,8 @@ class _CardItemState extends State<CardItem> {
                               fontSize: 15,
                               fontWeight: FontWeight.w500)),
                       SizedBox(width: 16),
-                      Icon(Icons.article_outlined, size: 20, color: Colors.grey),
+                      Icon(Icons.article_outlined,
+                          size: 20, color: Colors.grey),
                       SizedBox(width: 4),
                       Text('${widget.numIngredients}',
                           style: TextStyle(

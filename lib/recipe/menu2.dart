@@ -11,6 +11,7 @@ class Menu extends StatefulWidget {
   final List<String> recipeTags;
   final int recipeTime;
   final bool isPinned;
+  final List<dynamic> recipeInstructions;
 
   Menu({
     required this.userID,
@@ -20,6 +21,7 @@ class Menu extends StatefulWidget {
     required this.recipeTags,
     required this.recipeTime,
     required this.isPinned,
+    required this.recipeInstructions,
   });
 
   @override
@@ -29,6 +31,7 @@ class Menu extends StatefulWidget {
         recipeImage: recipeImage,
         recipeTags: recipeTags,
         recipeTime: recipeTime,
+        recipeInstructions: recipeInstructions,
 
         // Pass the bookmark status
       );
@@ -40,15 +43,17 @@ class _MenuState extends State<Menu> {
   final String recipeImage;
   final List<String> recipeTags;
   final int recipeTime;
+  final List<dynamic> recipeInstructions;
   List<Map<String, dynamic>> ingredient = [];
-  List<Map<String, dynamic>> user= [];
-  bool isPinned = false; 
+  List<Map<String, dynamic>> user = [];
+  bool isPinned = false;
 
   int count = 1;
   int currentStepIndex = 0;
 
   @override
   void initState() {
+    print(widget.userID);
     super.initState();
     _fetchRecipes();
     _loadUser();
@@ -59,7 +64,8 @@ class _MenuState extends State<Menu> {
     try {
       final userId = widget.userID;
       final recipeId = widget.recipeID;
-      final baseUrl = 'https://fridgeringapi.fly.dev/user/$userId/pin_recipes/$recipeId';
+      final baseUrl =
+          'https://fridgeringapi.fly.dev/user/$userId/pin_recipes/$recipeId';
 
       if (isPinned) {
         // If already pinned, send a DELETE request to unpin
@@ -89,33 +95,35 @@ class _MenuState extends State<Menu> {
     }
   }
 
-  Future<void> _fetchRecipes() async {
+  Future<List<Map<String, dynamic>>> _fetchRecipes() async {
     try {
       final response = await http.get(
         Uri.parse(
-            'https://fridgeringapi.fly.dev/recipes/$recipeID/ingredients'),
+            'https://fridgeringapi.fly.dev/recipes/${widget.recipeID}/ingredients'),
       );
 
       if (response.statusCode == 200) {
         // Successfully fetched recipes
         final Map<String, dynamic> data = jsonDecode(response.body);
         final List<dynamic> ingredientList = data['data'];
-        setState(() {
-          ingredient = List<Map<String, dynamic>>.from(ingredientList);
-        });
+
+        return List<Map<String, dynamic>>.from(ingredientList);
       } else {
         // Handle errors
         print('Failed to fetch recipes. Status code: ${response.statusCode}');
+        return [];
       }
     } catch (e) {
       // Handle other errors
       print('Error: $e');
+      return [];
     }
   }
 
   Future<void> _loadUser() async {
     try {
-      final userResponse = await http.get(Uri.parse('https://fridgeringapi.fly.dev/user/${widget.userID}'));
+      final userResponse = await http.get(
+          Uri.parse('https://fridgeringapi.fly.dev/user/${widget.userID}'));
 
       if (userResponse.statusCode == 200) {
         final Map<String, dynamic> userData = json.decode(userResponse.body);
@@ -123,10 +131,13 @@ class _MenuState extends State<Menu> {
 
         setState(() {
           user = [userList];
-          isPinned = (userList['pinnedRecipes'] as List?)?.contains(widget.recipeID) ?? false;
+          isPinned =
+              (userList['pinnedRecipes'] as List?)?.contains(widget.recipeID) ??
+                  false;
         });
       } else {
-        print('Failed to load user data. Status code: ${userResponse.statusCode}');
+        print(
+            'Failed to load user data. Status code: ${userResponse.statusCode}');
       }
     } catch (e) {
       // Handle other errors
@@ -149,6 +160,7 @@ class _MenuState extends State<Menu> {
     required this.recipeImage,
     required this.recipeTags,
     required this.recipeTime,
+    required this.recipeInstructions,
   });
 
   void incrementCount() {
@@ -169,166 +181,167 @@ class _MenuState extends State<Menu> {
 
   Set<String> selectedIngredients = {};
   Widget buildIngredientsList(
-      Set<String> selectedIngredients, List<Map<String, dynamic>> ingredients) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: ingredients.where((ingredientDetails) {
-        final amount =
-            int.tryParse(ingredientDetails['amount'].toString()) ?? 0;
+    Set<String> selectedIngredients,
+    Future<List<Map<String, dynamic>>> ingredientsFuture,
+  ) {
+    return FutureBuilder(
+      future: ingredientsFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // Loading state
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (snapshot.hasError) {
+          // Error state
+          return Center(
+            child: Text('Error: ${snapshot.error}'),
+          );
+        } else {
+          // Loaded state
+          List<Map<String, dynamic>> ingredients =
+              snapshot.data as List<Map<String, dynamic>>;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: ingredients.map((ingredientDetails) {
+              String ingredientName = ingredientDetails['name'] ?? '';
 
-        return amount > 0;
-      }).map((ingredientDetails) {
-        String ingredientName = ingredientDetails['name'] ?? '';
+              if (ingredientName.isEmpty) {
+                ingredientName =
+                    ingredientDetails['original'] ?? 'Unknown Ingredient';
+                List<String> words = ingredientName.split(' ');
 
-        if (ingredientName.isEmpty) {
-          // ถ้า name ว่าง ให้ใช้ original แทน
-          ingredientName =
-              ingredientDetails['original'] ?? 'Unknown Ingredient';
+                if (words.isNotEmpty) {
+                  ingredientName = words[0];
+                }
+              }
 
-          // Split เพื่อให้ได้คำหน้า
-          List<String> words = ingredientName.split(' ');
+              int? quantity =
+                  int.tryParse(ingredientDetails['amount'].toString());
+              String unit = ingredientDetails['unit'] ?? '';
 
-          // ตัดทิ้งเว้นวรรคหลังคำหน้า (ถ้ามี)
-          if (words.isNotEmpty) {
-            // ตัดคำหน้า
-            ingredientName = words[0];
-          }
+              return ListTile(
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      width: 200,
+                      child: Text(
+                        ingredientName,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      '${quantity != null ? quantity * count : 'Optional'} ${unit}',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+                tileColor: selectedIngredients.contains(ingredientName)
+                    ? Colors.grey[300]
+                    : null,
+                onTap: () {
+                  // Handle tap on ingredient
+                  // You can implement your logic here
+                },
+              );
+            }).toList(),
+          );
         }
+      },
+    );
+  }
 
-// ตรวจสอบความยาวและลบข้อมูลที่เกิน
-        const maxCharacters = 25;
-        if (ingredientName.length > maxCharacters) {
-          // หากเกิน 20 ตัวอักษร ให้ตัดเป็นบรรทัดใหม่
-          ingredientName = ingredientName.substring(0, maxCharacters) +
-              '\n-' +
-              ingredientName.substring(maxCharacters);
-        }
-
-        int quantity =
-            int.tryParse(ingredientDetails['amount'].toString()) ?? 0;
-        String unit = ingredientDetails['unit'] ?? '';
-
-        return ListTile(
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget buildCookingStepPage(int stepIndex) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Cooking Step'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            if (stepIndex > 0) {
+              // Navigate to the previous cooking step
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => buildCookingStepPage(stepIndex - 1),
+                ),
+              );
+            } else {
+              // Navigate back to the menu if it's the first step
+              Navigator.pop(context);
+            }
+          },
+        ),
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                ingredientName,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      widget.recipeInstructions[stepIndex],
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 20),
+                  ],
                 ),
               ),
-              Text(
-                '${quantity * count} ${unit}',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+              Container(
+                height: 60,
+                margin: EdgeInsets.all(36),
+                width: double.infinity,
+                child: TextButton(
+                  child: Text(
+                    "Next Step",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  onPressed: () {
+                    if (stepIndex < widget.recipeInstructions.length - 1) {
+                      // Navigate to the next cooking step
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              buildCookingStepPage(stepIndex + 1),
+                        ),
+                      );
+                    } else {
+                      // Navigate back to the menu if it's the last step
+                      Navigator.pop(context);
+                    }
+                  },
+                  style: TextButton.styleFrom(
+                    backgroundColor: Theme.of(context).primaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
                 ),
               ),
             ],
           ),
-          tileColor: selectedIngredients.contains(ingredientName)
-              ? Colors.grey[300]
-              : null,
-          onTap: () {
-            // Handle tap on ingredient
-            // You can implement your logic here
-          },
-        );
-      }).toList(),
+        ),
+      ),
     );
   }
-
-  // Widget buildCookingStepPage(String step) {
-  //   return Scaffold(
-  //     appBar: AppBar(
-  //       title: Text('Cooking Step'),
-  //       // เพิ่มปุ่มย้อนกลับ
-  //       leading: IconButton(
-  //         icon: Icon(Icons.arrow_back),
-  //         onPressed: () {
-  //           // ถ้าไม่ได้อยู่ที่ขั้นตอนแรก
-  //           if (currentStepIndex > 0) {
-  //             currentStepIndex--;
-  //             // ย้อนกลับไปยังหน้าขั้นตอนก่อนหน้านี้
-  //             Navigator.pushReplacement(
-  //               context,
-  //               MaterialPageRoute(
-  //                 builder: (context) =>
-  //                     buildCookingStepPage(cookingSteps[currentStepIndex]),
-  //               ),
-  //             );
-  //           } else {
-  //             // ถ้าอยู่ที่ขั้นตอนแรก กลับไปหน้าเมนู
-  //             Navigator.pop(context);
-  //           }
-  //         },
-  //       ),
-  //     ),
-  //     body: Center(
-  //       child: Padding(
-  //         padding: const EdgeInsets.all(16.0),
-  //         child: Column(
-  //           mainAxisAlignment: MainAxisAlignment.center,
-  //           children: [
-  //             Expanded(
-  //               child: Column(
-  //                 mainAxisAlignment: MainAxisAlignment.center,
-  //                 children: [
-  //                   Text(
-  //                     step,
-  //                     style: TextStyle(fontSize: 24),
-  //                   ),
-  //                   SizedBox(height: 20),
-  //                 ],
-  //               ),
-  //             ),
-  //             // ปุ่ม "Next Step" ด้วยสไตล์
-  //             Container(
-  //               height: 60,
-  //               margin: EdgeInsets.all(36),
-  //               width: double.infinity,
-  //               child: TextButton(
-  //                 child: Text(
-  //                   "Next Step",
-  //                   style: TextStyle(
-  //                     color: Colors.white,
-  //                     fontSize: 18,
-  //                     fontWeight: FontWeight.w700,
-  //                   ),
-  //                 ),
-  //                 onPressed: () {
-  //                   // ตรวจสอบว่ายังมีขั้นตอนถัดไปหรือไม่
-  //                   if (currentStepIndex < cookingSteps.length - 1) {
-  //                     currentStepIndex++;
-  //                     // เปลี่ยนไปยังหน้าขั้นตอนถัดไป
-  //                     Navigator.pushReplacement(
-  //                       context,
-  //                       MaterialPageRoute(
-  //                         builder: (context) => buildCookingStepPage(
-  //                             cookingSteps[currentStepIndex]),
-  //                       ),
-  //                     );
-  //                   } else {
-  //                     // ถ้าเป็นขั้นตอนสุดท้ายแล้ว กลับไปหน้าเมนู
-  //                     Navigator.pop(context);
-  //                   }
-  //                 },
-  //                 style: TextButton.styleFrom(
-  //                   backgroundColor: Theme.of(context).primaryColor,
-  //                   shape: RoundedRectangleBorder(
-  //                     borderRadius: BorderRadius.circular(20),
-  //                   ),
-  //                 ),
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -398,10 +411,15 @@ class _MenuState extends State<Menu> {
                             Padding(
                               padding: const EdgeInsets.only(bottom: 4.0),
                               child: GestureDetector(
-                                onTap: _togglePinStatus, // Call the toggle method here
+                                onTap:
+                                    _togglePinStatus, // Call the toggle method here
                                 child: Icon(
-                                  isPinned ? Icons.bookmark_rounded : Icons.bookmark_outline_rounded,
-                                  color: isPinned ? Theme.of(context).primaryColor : Colors.grey,
+                                  isPinned
+                                      ? Icons.bookmark_rounded
+                                      : Icons.bookmark_outline_rounded,
+                                  color: isPinned
+                                      ? Theme.of(context).primaryColor
+                                      : Colors.grey,
                                   size: 40.0,
                                 ),
                               ),
@@ -514,28 +532,32 @@ class _MenuState extends State<Menu> {
                           ],
                         ),
                       ),
-                      SizedBox(height: 16),
+                      SizedBox(height: 20),
                       Container(
-                          padding: EdgeInsets.symmetric(horizontal: 18.0),
-                          child: Column(
-                            children: [
-                              ExpansionTile(
-                                title: Text('Ingredient',
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.black)),
-                                initiallyExpanded: true,
-                                children: [
-                                  buildIngredientsList(
-                                      selectedIngredients, ingredient)
-                                ],
+                        padding: EdgeInsets.symmetric(horizontal: 18.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(left: 9.0),
+                              child: Text(
+                                'Ingredient',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black,
+                                ),
                               ),
-                              // Vegetable Ingredients
+                            ),
 
-                              // Sauce Ingredients
-                            ],
-                          )),
+                            Divider(), // เพิ่ม Divider ที่นี่
+                            buildIngredientsList(
+                              selectedIngredients,
+                              _fetchRecipes(),
+                            )
+                          ],
+                        ),
+                      ),
                       Container(
                         height: 60,
                         margin:
@@ -551,14 +573,19 @@ class _MenuState extends State<Menu> {
                             ),
                           ),
                           onPressed: () {
-                            // // เปลี่ยนไปยังหน้าขั้นตอนการทำอาหารแรก
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     builder: (context) => buildCookingStepPage(
-                            //         cookingSteps[currentStepIndex]),
-                            //   ),
-                            // );
+                            // Check if there are any cooking steps
+                            if (widget.recipeInstructions.isNotEmpty) {
+                              // Navigate to the first step of the recipe instructions
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => buildCookingStepPage(0),
+                                ),
+                              );
+                            } else {
+                              // Handle the case where there are no cooking steps
+                              print('No cooking steps available.');
+                            }
                           },
                           style: TextButton.styleFrom(
                             backgroundColor: Theme.of(context).primaryColor,

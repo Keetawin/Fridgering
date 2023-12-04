@@ -9,8 +9,9 @@ class ProfilePage extends StatefulWidget {
   final String? userId;
   final String? userImage;
   final String? userName;
+  final String? userEmail;
 
-  ProfilePage({this.userId, this.userImage, this.userName});
+  ProfilePage({this.userId, this.userImage, this.userName, this.userEmail});
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
@@ -29,6 +30,7 @@ class _ProfilePageState extends State<ProfilePage> {
     super.initState();
     refreshProfilePage();
   }
+
   void refreshProfilePage() {
     _loadUser();
     pinnedIngredients = [];
@@ -41,14 +43,17 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> _loadUser() async {
     try {
-      final userResponse = await http.get(Uri.parse('https://fridgeringapi.fly.dev/user/${widget.userId}'));
+      final userResponse = await http.get(
+          Uri.parse('https://fridgeringapi.fly.dev/user/${widget.userId}'));
 
       if (userResponse.statusCode == 200) {
         final Map<String, dynamic> userData = json.decode(userResponse.body);
         final Map<String, dynamic> userList = userData['data'];
 
-        List<String> pinnedRecipesData = List<String>.from(userList['pinnedRecipes'] ?? []);
-        List<int> pinnedIngredientData = List<int>.from(userList['pinnedIngredients'] ?? []);
+        List<String> pinnedRecipesData =
+            List<String>.from(userList['pinnedRecipes'] ?? []);
+        List<int> pinnedIngredientData =
+            List<int>.from(userList['pinnedIngredients'] ?? []);
 
         setState(() {
           pinnedIngredients = pinnedIngredientData;
@@ -57,8 +62,9 @@ class _ProfilePageState extends State<ProfilePage> {
         });
         _loadRecipes();
         _loadIngredient();
-      } else {   
-        print('Failed to load user data. Status code: ${userResponse.statusCode}');
+      } else {
+        print(
+            'Failed to load user data. Status code: ${userResponse.statusCode}');
         _loadRecipes();
         _loadIngredient();
       }
@@ -68,66 +74,72 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-Future<void> _loadRecipes() async {
-  try {  
-    final List<String> restrictions = pinnedRecipes.isNotEmpty ? pinnedRecipes : [''];
+  Future<void> _loadRecipes() async {
+    try {
+      final List<String> restrictions =
+          pinnedRecipes.isNotEmpty ? pinnedRecipes : [''];
 
-    for (String restriction in restrictions) {
-      final recipesResponse = await http.get(
-          Uri.parse('https://fridgeringapi.fly.dev/recipes/$restriction'));
-      
-      if (recipesResponse.statusCode == 200) {
-        final Map<String, dynamic> recipesData = json.decode(recipesResponse.body);
-        final Map<String, dynamic> oneRecipes = recipesData['data'];
+      for (String restriction in restrictions) {
+        final recipesResponse = await http.get(
+            Uri.parse('https://fridgeringapi.fly.dev/recipes/$restriction'));
+
+        if (recipesResponse.statusCode == 200) {
+          final Map<String, dynamic> recipesData =
+              json.decode(recipesResponse.body);
+          final Map<String, dynamic> oneRecipes = recipesData['data'];
           setState(() {
             recipes.add(oneRecipes);
           });
-      } else {
-        print('Failed to load recipes for $restriction. Status code: ${recipesResponse.statusCode}');
-      } 
+        } else {
+          print(
+              'Failed to load recipes for $restriction. Status code: ${recipesResponse.statusCode}');
+        }
 
-      final ingredientsResponse = await http.get(Uri.parse('https://fridgeringapi.fly.dev/recipes/$restriction/ingredients'));
+        final ingredientsResponse = await http.get(Uri.parse(
+            'https://fridgeringapi.fly.dev/recipes/$restriction/ingredients'));
 
-      if (ingredientsResponse.statusCode == 200) {
-        Map<String, dynamic> ingredientsData = json.decode(ingredientsResponse.body);
-        final List<dynamic> ingredientsList = ingredientsData['data'];
+        if (ingredientsResponse.statusCode == 200) {
+          Map<String, dynamic> ingredientsData =
+              json.decode(ingredientsResponse.body);
+          final List<dynamic> ingredientsList = ingredientsData['data'];
 
-        int count = ingredientsList.length;
-        setState(() {
-          ingredientsLenght.add(count);
-        });
-      } else {
-        print('Failed to load ingredients for recipe $restriction. Status code: ${ingredientsResponse.statusCode}');
-      }         
+          int count = ingredientsList.length;
+          setState(() {
+            ingredientsLenght.add(count);
+          });
+        } else {
+          print(
+              'Failed to load ingredients for recipe $restriction. Status code: ${ingredientsResponse.statusCode}');
+        }
+      }
+    } catch (e) {
+      // Handle other errors
+      print('Error: $e');
     }
-  } catch (e) {
-    // Handle other errors
-    print('Error: $e');
   }
-}
-
-
 
   Future<void> _loadIngredient() async {
     try {
-      final List<int> restrictions = pinnedIngredients.isNotEmpty ? pinnedIngredients : [];
+      final List<int> restrictions =
+          pinnedIngredients.isNotEmpty ? pinnedIngredients : [];
 
       for (int restriction in restrictions) {
-        final ingredientResponse = await http.get(
-            Uri.parse('https://fridgeringapi.fly.dev/common_ingredient/$restriction'));
-        
+        final ingredientResponse = await http.get(Uri.parse(
+            'https://fridgeringapi.fly.dev/common_ingredient/$restriction'));
+
         if (ingredientResponse.statusCode == 200) {
-          final Map<String, dynamic> IngredientData = json.decode(ingredientResponse.body);
+          final Map<String, dynamic> IngredientData =
+              json.decode(ingredientResponse.body);
           final Map<String, dynamic> oneIngredient = IngredientData['data'];
-            setState(() {
-              ingredients.add(oneIngredient);
-            });
+          setState(() {
+            ingredients.add(oneIngredient);
+          });
         } else {
-          print('Failed to load ingredient data. Status code: ${ingredientResponse.statusCode}');
+          print(
+              'Failed to load ingredient data. Status code: ${ingredientResponse.statusCode}');
         }
       }
-    }
-    catch (e) {
+    } catch (e) {
       // Handle other errors
       print('Error: $e');
     }
@@ -189,8 +201,12 @@ Future<void> _loadRecipes() async {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              SettingPage(), // Use SettingPage instead of SettingsPage
+                          builder: (context) => SettingPage(
+                              userEmail: widget.userEmail,
+                              userName: widget.userName,
+                              userImage: widget.userImage,
+                              userId: widget
+                                  .userId), // Use SettingPage instead of SettingsPage
                         ),
                       );
                     },
@@ -219,60 +235,62 @@ Future<void> _loadRecipes() async {
                   SizedBox(height: 16),
                   //Horizontal ListView for recipe cards
                   recipes.isEmpty
-                    ? Container(
-                      padding: EdgeInsets.only(right: 20),
-                        height: 190, // Adjust the height as needed
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              'You don\'t have any bookmarked recipes.',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            Text(
-                              'Explore and bookmark recipes to your collection!',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      )
-                    : Container(
-                        height: 300,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: recipes.length,
-                          itemExtent: 290,
-                          itemBuilder: (context, index) {
-                            if (index < recipes.length && index < ingredientsLenght.length) {
-                              return Padding(
-                                padding: EdgeInsets.only(right: 8),
-                                child: CardItem(
-                                  index: index,
-                                  user: user.isNotEmpty ? user[0] : {},
-                                  recipeId: recipes[index]['recipeID'],
-                                  imageUrl: recipes[index]['image'][0],
-                                  tagAndTitle: recipes[index]['name'],
-                                  tags: recipes[index]['tags'],
-                                  timeToCook: recipes[index]['cookTime'],
-                                  numIngredients: ingredientsLenght[index],
-                                  onTap: refreshProfilePage,
+                      ? Container(
+                          padding: EdgeInsets.only(right: 20),
+                          height: 190, // Adjust the height as needed
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                'You don\'t have any bookmarked recipes.',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
                                 ),
-                              );
-                            } else {
-                              return SizedBox.shrink(); // Or some placeholder if data is not available
-                            }
-                          },
+                                textAlign: TextAlign.center,
+                              ),
+                              Text(
+                                'Explore and bookmark recipes to your collection!',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        )
+                      : Container(
+                          height: 300,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: recipes.length,
+                            itemExtent: 290,
+                            itemBuilder: (context, index) {
+                              if (index < recipes.length &&
+                                  index < ingredientsLenght.length) {
+                                return Padding(
+                                  padding: EdgeInsets.only(right: 8),
+                                  child: CardItem(
+                                    index: index,
+                                    user: user.isNotEmpty ? user[0] : {},
+                                    recipeId: recipes[index]['recipeID'],
+                                    imageUrl: recipes[index]['image'][0],
+                                    tagAndTitle: recipes[index]['name'],
+                                    tags: recipes[index]['tags'],
+                                    timeToCook: recipes[index]['cookTime'],
+                                    numIngredients: ingredientsLenght[index],
+                                    onTap: refreshProfilePage,
+                                  ),
+                                );
+                              } else {
+                                return SizedBox
+                                    .shrink(); // Or some placeholder if data is not available
+                              }
+                            },
+                          ),
                         ),
-                      ),
                 ],
               ),
             ),
@@ -311,49 +329,50 @@ Future<void> _loadRecipes() async {
                     ],
                   ),
                   SizedBox(height: 16),
-                   ingredients.isEmpty
-                    ? Container(
-                        padding: EdgeInsets.only(left: 36,right: 20),
-                        height: 190, // Adjust the height as needed
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              'You don\'t have any bookmarked ingredients.',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey,
+                  ingredients.isEmpty
+                      ? Container(
+                          padding: EdgeInsets.only(left: 36, right: 20),
+                          height: 190, // Adjust the height as needed
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                'You don\'t have any bookmarked ingredients.',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                ),
+                                textAlign: TextAlign.center,
                               ),
-                              textAlign: TextAlign.center,
-                            ),
-                            Text(
-                              'Explore and add ingredients to your collection!',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey,
+                              Text(
+                                'Explore and add ingredients to your collection!',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                ),
+                                textAlign: TextAlign.center,
                               ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      )
-                    : Padding(
-                        // Add padding to the FridgeList
-                        padding: EdgeInsets.only(left: 36),
-                        child: FridgeList(
-                          fridgeItems: List.generate(
-                            ingredients.length,
-                            (index) => FridgeListItem(
-                              title: ingredients[index]['description'],
-                              imageUrl: ingredients[index]['image'],
-                              ingredientID: ingredients[index]['fdcId'].toString(),
-                              userId: widget.userId,
-                              onTap: refreshProfilePage,
+                            ],
+                          ),
+                        )
+                      : Padding(
+                          // Add padding to the FridgeList
+                          padding: EdgeInsets.only(left: 36),
+                          child: FridgeList(
+                            fridgeItems: List.generate(
+                              ingredients.length,
+                              (index) => FridgeListItem(
+                                title: ingredients[index]['description'],
+                                imageUrl: ingredients[index]['image'],
+                                ingredientID:
+                                    ingredients[index]['fdcId'].toString(),
+                                userId: widget.userId,
+                                onTap: refreshProfilePage,
+                              ),
                             ),
                           ),
                         ),
-                      ),
                   SizedBox(height: 16),
                 ],
               ),

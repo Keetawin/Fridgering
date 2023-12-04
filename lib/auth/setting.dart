@@ -2,9 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../welcome/onboarding.dart';
-import '../dietary/dietary.dart';
+import '../dietary/edit_dietary.dart';
 
 class SettingPage extends StatelessWidget {
+  final String? userId;
+  final String? userImage;
+  final String? userName;
+  final String? userEmail;
+
+  SettingPage({this.userId, this.userImage, this.userName, this.userEmail});
+
   void _showLogoutConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -63,20 +70,14 @@ class SettingPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        DietaryPage(), // Use SettingPage instead of SettingsPage
+                    builder: (context) => EditDietaryPage(
+                      userId: userId,
+                      userImage: userImage,
+                      userName: userName,
+                      userEmail: userEmail,
+                    ), // Use SettingPage instead of SettingsPage
                   ),
                 );
-              },
-            ),
-            Divider(),
-            ListTile(
-              title: Text(
-                'Notification Settings',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
-              ),
-              onTap: () {
-                // Navigate to notification settings page
               },
             ),
             Divider(), // Add a divider for visual separation

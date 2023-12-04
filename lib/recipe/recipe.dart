@@ -41,6 +41,7 @@ class _RecipePageState extends State<RecipePage> {
               (searchResults[index]['tags'] as List<dynamic>).cast<String>(),
           recipeTime: searchResults[index]['cookTime'] as int,
           isPinned: false,
+          recipeInstructions: searchResults[index]['instructions'],
         ),
       ),
     );
@@ -50,6 +51,12 @@ class _RecipePageState extends State<RecipePage> {
   void initState() {
     super.initState();
     _fetchRecipes();
+  }
+
+  @override
+  void dispose() {
+    // Cancel any active timers or listeners here
+    super.dispose();
   }
 
   Future<void> _fetchRecipes([String? nameQuery]) async {
