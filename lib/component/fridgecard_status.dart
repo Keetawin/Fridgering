@@ -140,7 +140,7 @@ class ExpirationLifeBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double lifePercentage = daysLeft >= 0
+    double lifePercentage = daysLeft > 0
         ? ((daysLeft / period))
         : 0.0; // Calculate the percentage of time elapsed
     Color lifeBarColor = _getLifeBarColor(lifePercentage);
