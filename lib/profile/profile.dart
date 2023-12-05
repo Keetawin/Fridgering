@@ -281,6 +281,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     tags: recipes[index]['tags'],
                                     timeToCook: recipes[index]['cookTime'],
                                     numIngredients: ingredientsLenght[index],
+                                    instruction: recipes[index]['instructions'],
                                     onTap: refreshProfilePage,
                                   ),
                                 );

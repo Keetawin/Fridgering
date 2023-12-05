@@ -11,6 +11,7 @@ class CardItem extends StatefulWidget {
   final dynamic timeToCook;
   final int numIngredients;
   final VoidCallback onTap;
+  final List<dynamic> instruction;
 
   CardItem({
     required this.index,
@@ -22,6 +23,7 @@ class CardItem extends StatefulWidget {
     required this.timeToCook,
     required this.numIngredients,
     required this.onTap,
+    required this.instruction,
   });
 
   @override
@@ -62,8 +64,7 @@ class _CardItemState extends State<CardItem> {
               recipeTags: widget.tags.cast<String>(),
               recipeTime: widget.timeToCook,
               isPinned: isPinned,
-              recipeInstructions: widget.user['recipes'][widget.index]
-                  ['instructions'],
+              recipeInstructions: widget.instruction,
             ),
           ),
         );

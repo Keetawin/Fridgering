@@ -484,6 +484,7 @@ class MainhomePageState extends State<MainhomePage> {
                                               ['cookTime'],
                                           numIngredients:
                                               ingredientsLenght[index],
+                                          instruction: recipes[index]['instructions'],
                                           onTap: () {
                                             setState(() {});
                                           },
