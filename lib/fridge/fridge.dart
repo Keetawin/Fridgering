@@ -619,7 +619,7 @@ class ExpirationLifeBar extends StatelessWidget {
   }
 
   Color _getLifeBarColor(double percentage) {
-    if (1 > percentage && percentage >= 0.6) {
+    if (1 >= percentage && percentage >= 0.6) {
       return Colors.green;
     } else if (0.6 > percentage && percentage >= 0.3) {
       return Colors.orange;
