@@ -112,14 +112,6 @@ class _RecipePageState extends State<RecipePage> {
                     color: Theme.of(context).primaryColor,
                   ),
                 ),
-                IconButton(
-                  onPressed: _navigateToNotiScreen,
-                  icon: Icon(
-                    Icons.notifications,
-                    color: Colors.black,
-                    size: 30,
-                  ),
-                ),
               ],
             ),
             SizedBox(height: 20),

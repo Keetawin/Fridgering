@@ -99,7 +99,8 @@ class _IngredientPageState extends State<AddPage> {
 
         setState(() {
           isPinned = (userList['pinnedIngredients'] as List?)
-                    ?.contains(ingredientIdAsInt) ?? false;
+                  ?.contains(ingredientIdAsInt) ??
+              false;
         });
       } else {
         print(
@@ -119,8 +120,8 @@ class _IngredientPageState extends State<AddPage> {
       'addedDate': DateTime.now().toIso8601String(),
       'amount': int.parse(quantityValue),
       'expiredDate': expirationDate.isEmpty
-        ? null
-        : DateFormat('dd/MM/yyyy').parse(expirationDate).toIso8601String(),
+          ? null
+          : DateFormat('dd/MM/yyyy').parse(expirationDate).toIso8601String(),
       'fcdId': int.parse(widget.ingredientID),
       'name': widget.ingredientName,
       'unit': selectedUnit,
@@ -133,14 +134,51 @@ class _IngredientPageState extends State<AddPage> {
     );
 
     if (response.statusCode == 200) {
-      // Ingredient added successfully, navigate to the fridge page
+      // Ingredient added successfully, show congratulatory alert
       print('Ingredient added successfully');
 
-      // Use Navigator to go to the fridge page
-      Navigator.popUntil(context, (route) => route.isFirst);
+      // Show a congratulatory alert box
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Ingredient Added'),
+            content: Text('Ingredient added successfully!'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  // Navigate back to the first screen
+                  Navigator.popUntil(context, (route) => route.isFirst);
+                  Navigator.pop(context);
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
     } else {
-      // Handle the error, you can show a message or take appropriate action
+      // Failed to add ingredient, show an error alert
       print('Failed to add ingredient. Status code: ${response.statusCode}');
+
+      // Show an alert box for failure
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Add Ingredient Failed'),
+            content: Text('Failed to add ingredient. Please try again.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
     }
   }
 

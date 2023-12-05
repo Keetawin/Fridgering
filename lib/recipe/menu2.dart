@@ -259,9 +259,11 @@ class _MenuState extends State<Menu> {
   }
 
   Widget buildCookingStepPage(int stepIndex) {
+    int totalSteps = widget.recipeInstructions.length;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Cooking Step'),
+        title: Text('Cooking Step ${stepIndex + 1}/$totalSteps'),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
@@ -290,11 +292,19 @@ class _MenuState extends State<Menu> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      widget.recipeInstructions[stepIndex],
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-                      textAlign: TextAlign.center,
+                    Container(
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.grey), // Border color
+                        color: Colors.white, // Background color
+                      ),
+                      child: Text(
+                        widget.recipeInstructions[stepIndex],
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w600),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                     SizedBox(height: 20),
                   ],
@@ -314,7 +324,7 @@ class _MenuState extends State<Menu> {
                     ),
                   ),
                   onPressed: () {
-                    if (stepIndex < widget.recipeInstructions.length - 1) {
+                    if (stepIndex < totalSteps - 1) {
                       // Navigate to the next cooking step
                       Navigator.pushReplacement(
                         context,

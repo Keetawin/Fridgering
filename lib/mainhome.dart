@@ -314,6 +314,26 @@ class MainhomePageState extends State<MainhomePage> {
       if (response.statusCode == 200) {
         // Ingredient data updated successfully
         print('Ingredient data updated successfully.');
+
+        // Show a congratulatory alert box
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Update Successful'),
+              content: Text('Ingredient data updated successfully!'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+
         // You can update the local state or perform any other actions as needed
         // For example, you might want to reload the ingredient data
         _loadIngredient();
@@ -321,6 +341,26 @@ class MainhomePageState extends State<MainhomePage> {
         // Failed to update ingredient data
         print(
             'Failed to update ingredient data. Status code: ${response.statusCode}');
+
+        // Show an alert box for failure
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Update Failed'),
+              content:
+                  Text('Failed to update ingredient data. Please try again.'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
       }
     } catch (e) {
       // Handle other errors
@@ -403,14 +443,6 @@ class MainhomePageState extends State<MainhomePage> {
                           ],
                         ),
                       ),
-                      IconButton(
-                        onPressed: _navigateToNotiScreen,
-                        icon: Icon(
-                          Icons.notifications,
-                          color: Colors.black,
-                          size: 30,
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -484,7 +516,8 @@ class MainhomePageState extends State<MainhomePage> {
                                               ['cookTime'],
                                           numIngredients:
                                               ingredientsLenght[index],
-                                          instruction: recipes[index]['instructions'],
+                                          instruction: recipes[index]
+                                              ['instructions'],
                                           onTap: () {
                                             setState(() {});
                                           },
