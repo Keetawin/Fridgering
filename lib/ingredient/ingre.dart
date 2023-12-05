@@ -3,7 +3,6 @@ import './add.dart';
 import 'package:standard_searchbar/standard_searchbar.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dart:async';
 
 class Ingredient extends StatefulWidget {
   final String? userId;
@@ -11,26 +10,17 @@ class Ingredient extends StatefulWidget {
   Ingredient({this.userId});
 
   @override
-  _FridgePageState createState() => _FridgePageState();
+  _IngredientState createState() => _IngredientState();
 }
 
-class _FridgePageState extends State<Ingredient> {
+class _IngredientState extends State<Ingredient> {
   String searchTerm = '';
-  Timer? _debounce;
-  String? userId;
-
   List<Map<String, dynamic>> ingredients = [];
 
   @override
   void initState() {
     super.initState();
     _fetchIngredients();
-  }
-
-  @override
-  void dispose() {
-    // Cancel any active timers or listeners here
-    super.dispose();
   }
 
   Future<void> _fetchIngredients() async {
@@ -63,14 +53,10 @@ class _FridgePageState extends State<Ingredient> {
   }
 
   void _onSearchChanged(String query) {
-    // Debounce the search to reduce the number of requests
-    if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () {
-      setState(() {
-        searchTerm = query;
-      });
-      _fetchIngredients();
+    setState(() {
+      searchTerm = query;
     });
+    _fetchIngredients();
   }
 
   @override
@@ -94,30 +80,15 @@ class _FridgePageState extends State<Ingredient> {
             child: Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24),
-              child: FutureBuilder(
-                future: _fetchIngredients(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    // ถ้า Future ยังไม่เสร็จสิ้น แสดง Loading Indicator
-                    return Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    // ถ้าเกิดข้อผิดพลาด
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else {
-                    // ถ้า Future เสร็จสิ้น แสดงข้อมูล
-                    return GridView.builder(
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 8.0,
-                        mainAxisSpacing: 20.0,
-                      ),
-                      itemCount: getFilteredIngredients().length,
-                      itemBuilder: (context, index) {
-                        return buildIngredientCard(
-                            getFilteredIngredients()[index]);
-                      },
-                    );
-                  }
+              child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 8.0,
+                  mainAxisSpacing: 20.0,
+                ),
+                itemCount: getFilteredIngredients().length,
+                itemBuilder: (context, index) {
+                  return buildIngredientCard(getFilteredIngredients()[index]);
                 },
               ),
             ),
@@ -129,13 +100,11 @@ class _FridgePageState extends State<Ingredient> {
 
   List<Map<String, dynamic>> getFilteredIngredients() {
     return ingredients.where((ingredient) {
-      // Check if foodNutritients is not empty and has at least one element
       if (ingredient['description'] != null &&
           ingredient['description'].isNotEmpty) {
         String name = ingredient['description'] ?? '';
         return name.toLowerCase().contains(searchTerm.toLowerCase());
       }
-      // If foodNutritients is empty or null, exclude this ingredient
       return false;
     }).toList();
   }
@@ -143,7 +112,6 @@ class _FridgePageState extends State<Ingredient> {
   Widget buildIngredientCard(Map<String, dynamic> ingredient) {
     return GestureDetector(
       onTap: () {
-        // Navigate to the AddPage with the ingredient
         Navigator.push(
           context,
           MaterialPageRoute(

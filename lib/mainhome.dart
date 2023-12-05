@@ -132,6 +132,9 @@ class MainhomePageState extends State<MainhomePage> {
             json.decode(ingredientResponse.body);
         final List<dynamic> userIngredientsList = responseData['data'];
 
+        List<Map<String, dynamic>> updatedIngredients = [];
+        List<String> updatedIngredientsImage = [];
+
         for (var ingredients in responseData['data']) {
           final ingredientsId = ingredients['fcdId'];
           final imageResponse = await http.get(Uri.parse(
@@ -145,9 +148,7 @@ class MainhomePageState extends State<MainhomePage> {
 
             final String ingredientsimg = ingredientsData['image'];
 
-            setState(() {
-              ingredientsimage.add(ingredientsimg);
-            });
+            updatedIngredientsImage.add(ingredientsimg);
           } else {
             print(
                 'Failed to load ingredients for recipe $ingredientsId. Status code: ${imageResponse.statusCode}');
@@ -156,6 +157,7 @@ class MainhomePageState extends State<MainhomePage> {
 
         setState(() {
           ingredients = List<Map<String, dynamic>>.from(userIngredientsList);
+          ingredientsimage = updatedIngredientsImage;
         });
       } else {
         print(
@@ -171,6 +173,7 @@ class MainhomePageState extends State<MainhomePage> {
     String quantity = ingredient['amount'].toString() ?? '';
     String selectedUnit =
         (ingredient['unit'] as String?)?.toUpperCase() ?? 'PCS';
+    String ingredientName = ingredient['name'] ?? ''; // New line
     List<String> parts = quantity.split(' ');
 
     TextEditingController quantityController =
@@ -191,12 +194,21 @@ class MainhomePageState extends State<MainhomePage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Edit Ingredient',
+                    'Edit Ingredient', // Updated line
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 12),
+                  Text(
+                    '$ingredientName', // Updated line
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   SizedBox(height: 20),
@@ -224,8 +236,39 @@ class MainhomePageState extends State<MainhomePage> {
                         });
                       }
                     },
-                    items: <String>['PCS', 'G', 'KG', 'L']
-                        .map<DropdownMenuItem<String>>((String value) {
+                    items: <String>[
+                      "CUP",
+                      "CUPS",
+                      "TBSP",
+                      "TSP",
+                      "OUNCE",
+                      "OZ",
+                      "G",
+                      "CC",
+                      "GRAM",
+                      "KG",
+                      "POUND",
+                      "LB",
+                      "EA",
+                      "PCS",
+                      "ML",
+                      "L",
+                      "GALLON",
+                      "HANDFUL",
+                      "SPLASH",
+                      "PINCH",
+                      "DROP",
+                      "PACKAGE",
+                      "CAN",
+                      "JAR",
+                      "BOTTLE",
+                      "BUNCH",
+                      "CLOVE",
+                      "SLICE",
+                      "HEAD",
+                      "DASH",
+                      "SPRIG"
+                    ].map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
                         child: Text(value),

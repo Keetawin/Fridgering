@@ -149,7 +149,6 @@ class _IngredientPageState extends State<AddPage> {
                 onPressed: () {
                   // Navigate back to the first screen
                   Navigator.popUntil(context, (route) => route.isFirst);
-                  Navigator.pop(context);
                 },
                 child: Text('OK'),
               ),
@@ -414,8 +413,39 @@ class _IngredientPageState extends State<AddPage> {
                                                 selectedUnit = value!;
                                               });
                                             },
-                                            items: ['g', 'kg', 'ml', 'L']
-                                                .map((unit) {
+                                            items: [
+                                              "cup",
+                                              "cups",
+                                              "tbsp",
+                                              "tsp",
+                                              "ounce",
+                                              "oz",
+                                              "g",
+                                              "cc",
+                                              "gram",
+                                              "kg",
+                                              "pound",
+                                              "lb",
+                                              "ea",
+                                              "pcs",
+                                              "ml",
+                                              "L",
+                                              "gallon",
+                                              "handful",
+                                              "splash",
+                                              "pinch",
+                                              "drop",
+                                              "package",
+                                              "can",
+                                              "jar",
+                                              "bottle",
+                                              "bunch",
+                                              "clove",
+                                              "slice",
+                                              "head",
+                                              "dash",
+                                              "sprig"
+                                            ].map((unit) {
                                               return DropdownMenuItem<String>(
                                                 value: unit,
                                                 child: Container(
