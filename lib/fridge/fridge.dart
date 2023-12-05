@@ -499,15 +499,19 @@ void _showEditModal(BuildContext context, Map<String, dynamic> ingredient) {
                     ),
                   ),
                   SizedBox(height: 8.0),
-                  Container(
-                    alignment: Alignment.center,
-                    child: Text(
-                      ingredient['name'] ?? 'Unknown',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  Flexible(
+                    child: Container(
+                      padding: EdgeInsets.all(2.0),
+                      child: Center(
+                        child: Text(
+                            ingredient['name'],
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
                     ),
                   ),
                   SizedBox(height: 8.0),
