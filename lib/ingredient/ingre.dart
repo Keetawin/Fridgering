@@ -6,8 +6,11 @@ import 'dart:convert';
 
 class Ingredient extends StatefulWidget {
   final String? userId;
+  final String? userImage;
+  final String? userName;
+  final String? userEmail;
 
-  Ingredient({this.userId});
+  Ingredient({this.userId, this.userImage, this.userName, this.userEmail});
 
   @override
   _IngredientState createState() => _IngredientState();
@@ -116,9 +119,13 @@ class _IngredientState extends State<Ingredient> {
           context,
           MaterialPageRoute(
             builder: (context) => AddPage(
-                ingredientID: ingredient['fdcId'].toString(),
-                userId: widget.userId,
-                ingredientName: ingredient['description']),
+              ingredientID: ingredient['fdcId'].toString(),
+              ingredientName: ingredient['description'],
+              userId: widget.userId,
+              userName: widget.userName,
+              userImage: widget.userImage,
+              userEmail: widget.userEmail,
+            ),
           ),
         );
       },

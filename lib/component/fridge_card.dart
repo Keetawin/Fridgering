@@ -7,6 +7,9 @@ class FridgeListItem extends StatelessWidget {
   final String imageUrl;
   final String ingredientID;
   final String? userId;
+  final String? userEmail;
+  final String? userName;
+  final String? userImage;
   final VoidCallback onTap;
 
   FridgeListItem({
@@ -15,6 +18,9 @@ class FridgeListItem extends StatelessWidget {
     required this.ingredientID,
     required this.userId,
     required this.onTap,
+    required this.userEmail,
+    required this.userName,
+    required this.userImage,
   });
 
   @override
@@ -27,6 +33,9 @@ class FridgeListItem extends StatelessWidget {
             builder: (context) => AddPage(
               ingredientID: ingredientID.toString(),
               userId: userId,
+              userEmail: userEmail,
+              userName: userName,
+              userImage: userImage,
               ingredientName: title,
             ),
           ),
@@ -93,6 +102,5 @@ class FridgeListItem extends StatelessWidget {
         ),
       ),
     );
-}
-
+  }
 }

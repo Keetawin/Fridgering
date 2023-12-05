@@ -369,6 +369,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ingredientID:
                                     ingredients[index]['fdcId'].toString(),
                                 userId: widget.userId,
+                                userName: widget.userName,
+                                userImage: widget.userImage,
+                                userEmail: widget.userEmail,
                                 onTap: refreshProfilePage,
                               ),
                             ),

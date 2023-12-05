@@ -7,8 +7,11 @@ import 'dart:convert';
 
 class FridgePage extends StatefulWidget {
   final String? userId;
+  final String? userImage;
+  final String? userName;
+  final String? userEmail;
 
-  FridgePage({this.userId});
+  FridgePage({this.userId, this.userImage, this.userName, this.userEmail});
 
   @override
   _FridgePageState createState() => _FridgePageState();
@@ -24,6 +27,9 @@ class _FridgePageState extends State<FridgePage> {
       MaterialPageRoute(
         builder: (context) => Ingredient(
           userId: widget.userId,
+          userImage: widget.userImage,
+          userName: widget.userName,
+          userEmail: widget.userEmail,
         ),
       ),
     );

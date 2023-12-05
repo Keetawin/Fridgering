@@ -3,17 +3,24 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
+import '../../home.dart';
 
 class AddPage extends StatefulWidget {
   final String ingredientID;
-  final String? userId;
   final String? ingredientName;
+  final String? userId;
+  final String? userImage;
+  final String? userName;
+  final String? userEmail;
 
   const AddPage({
     Key? key,
     required this.ingredientID,
-    required this.userId,
     required this.ingredientName,
+    required this.userId,
+    required this.userImage,
+    required this.userName,
+    required this.userEmail,
   }) : super(key: key);
 
   @override
@@ -148,7 +155,16 @@ class _IngredientPageState extends State<AddPage> {
               TextButton(
                 onPressed: () {
                   // Navigate back to the first screen
-                  Navigator.popUntil(context, (route) => route.isFirst);
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Home(
+                              userId: widget.userId,
+                              userImage: widget.userImage,
+                              userName: widget.userName,
+                              userEmail: widget.userEmail,
+                            )),
+                  );
                 },
                 child: Text('OK'),
               ),
@@ -249,15 +265,6 @@ class _IngredientPageState extends State<AddPage> {
                                         ),
                                       ),
                                     ),
-
-                                    // Text(
-                                    //   ingredients?['category'] ?? 'Unknown',
-                                    //   style: TextStyle(
-                                    //     fontSize: 18.0,
-                                    //     color: Colors.grey,
-                                    //     fontWeight: FontWeight.w500,
-                                    //   ),
-                                    // ),
                                   ],
                                 ),
                                 Padding(
