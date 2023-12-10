@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../home.dart';
+import '../navbar.dart';
 
 class EditDietaryPage extends StatefulWidget {
   final String? userId;
@@ -91,7 +91,7 @@ class _EditDietaryPageState extends State<EditDietaryPage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => Home(
+            builder: (context) => Navbar(
               userId: widget.userId,
               userImage: widget.userImage,
               userName: widget.userName,

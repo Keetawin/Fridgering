@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import '../component/fridge_card.dart';
-import '../component/recipecard_bookmark.dart';
+import '../component/fridgeCard.dart';
+import '../component/recipeCard.dart';
 import 'dart:convert';
 import '../auth/setting.dart';
 
@@ -272,7 +272,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   index < ingredientsLenght.length) {
                                 return Padding(
                                   padding: EdgeInsets.only(right: 8),
-                                  child: CardItem(
+                                  child: RecipeCard(
                                     index: index,
                                     user: user.isNotEmpty ? user[0] : {},
                                     recipeId: recipes[index]['recipeID'],
@@ -363,7 +363,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           child: FridgeList(
                             fridgeItems: List.generate(
                               ingredients.length,
-                              (index) => FridgeListItem(
+                              (index) => IngredientCard(
                                 title: ingredients[index]['description'],
                                 imageUrl: ingredients[index]['image'],
                                 ingredientID:
@@ -389,7 +389,7 @@ class _ProfilePageState extends State<ProfilePage> {
 }
 
 class FridgeList extends StatelessWidget {
-  final List<FridgeListItem> fridgeItems;
+  final List<IngredientCard> fridgeItems;
 
   FridgeList({required this.fridgeItems});
 

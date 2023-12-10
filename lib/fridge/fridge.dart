@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'ingredient.dart';
-import '../ingredient/ingre.dart';
+import '../ingredient/ingredient.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -52,8 +51,6 @@ class _FridgePageState extends State<FridgePage> {
         final Map<String, dynamic> responseData =
             json.decode(ingredientResponse.body);
         final List<dynamic> userIngredientsList = responseData['data'];
-
-        List<Map<String, dynamic>> updatedIngredients = [];
         List<String> updatedIngredientsImage = [];
 
         for (var ingredients in responseData['data']) {
@@ -194,7 +191,7 @@ class _FridgePageState extends State<FridgePage> {
   }
 
   void _showEditModal(BuildContext context, Map<String, dynamic> ingredient) {
-    String quantity = ingredient['amount'].toString() ?? '';
+    String quantity = ingredient['amount'].toString();
     String selectedUnit =
         (ingredient['unit'] as String?)?.toUpperCase() ?? 'PCS';
     String ingredientName = ingredient['name'] ?? ''; // New line

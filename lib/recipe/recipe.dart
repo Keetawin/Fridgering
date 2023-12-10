@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import './menu2.dart';
-import '../notification/notification.dart';
+import 'showRecipe.dart';
 import 'package:standard_searchbar/standard_searchbar.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -18,15 +17,7 @@ class _RecipePageState extends State<RecipePage> {
   List<Map<String, dynamic>> recipes = [];
   List<Map<String, dynamic>> searchResults = [];
   bool match = false;
-
-  void _navigateToNotiScreen() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => NotificationPage(),
-      ),
-    );
-  }
+  List<String> selectedDietaryOptions = [];
 
   void _navigateToMenuScreen(int index) {
     Navigator.push(
@@ -90,6 +81,8 @@ class _RecipePageState extends State<RecipePage> {
 
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
+
     return Scaffold(
       body: Container(
         padding: EdgeInsets.only(
@@ -115,23 +108,44 @@ class _RecipePageState extends State<RecipePage> {
               ],
             ),
             SizedBox(height: 20),
-
-            // Search Field
             Padding(
               padding: EdgeInsets.only(right: 9),
-              child: StandardSearchBar(
-                onChanged: (query) {
-                  setState(() {
-                    searchResults = recipes.where((recipe) {
-                      final title = recipe['name'].toLowerCase();
-                      final imageUrl = recipe['image'][0].toLowerCase();
-                      return title.contains(query.toLowerCase()) ||
-                          imageUrl.contains(query.toLowerCase());
-                    }).toList();
-                  });
-                  _fetchRecipes(query); // Fetch recipes based on the name query
-                },
-                hintText: 'Search...',
+              child: Row(
+                children: [
+                  Expanded(
+                    child: StandardSearchBar(
+                      onChanged: (query) {
+                        setState(() {
+                          searchResults = recipes.where((recipe) {
+                            final title = recipe['name'].toLowerCase();
+                            final imageUrl = recipe['image'][0].toLowerCase();
+                            return title.contains(query.toLowerCase()) ||
+                                imageUrl.contains(query.toLowerCase());
+                          }).toList();
+                        });
+                        _fetchRecipes(
+                            query); // Fetch recipes based on the name query
+                      },
+                      hintText: 'Search...',
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: theme.primaryColor,
+                      borderRadius: BorderRadius.circular(14.0),
+                    ),
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.tune,
+                        color: Colors.white, // Set the icon color to black
+                      ),
+                      onPressed: () {
+                        _showDietaryOptionsPopup(context);
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
             SizedBox(height: 12),
@@ -244,6 +258,120 @@ class _RecipePageState extends State<RecipePage> {
           ],
         ),
       ),
+    );
+  }
+
+  void _showDietaryOptionsPopup(BuildContext context) async {
+    List<String> selectedDietaryOptions = []; // Track selected options
+
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return AlertDialog(
+              title: Text('Dietary Options'),
+              content: Container(
+                height: 440,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildDietaryOptionCheckbox(
+                        "Vegetarian", selectedDietaryOptions, setState),
+                    _buildDietaryOptionCheckbox(
+                        "Vegan", selectedDietaryOptions, setState),
+                    _buildDietaryOptionCheckbox(
+                        "Pescatarian", selectedDietaryOptions, setState),
+                    _buildDietaryOptionCheckbox(
+                        "Flexitarian", selectedDietaryOptions, setState),
+                    _buildDietaryOptionCheckbox(
+                        "Gluten-Free", selectedDietaryOptions, setState),
+                    _buildDietaryOptionCheckbox(
+                        "Lactose-Free", selectedDietaryOptions, setState),
+                    _buildDietaryOptionCheckbox(
+                        "Halal", selectedDietaryOptions, setState),
+                    _buildDietaryOptionCheckbox(
+                        "Low-Carb", selectedDietaryOptions, setState),
+                    _buildDietaryOptionCheckbox(
+                        "High-Protein", selectedDietaryOptions, setState),
+                  ],
+                ),
+              ),
+              actions: [
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+
+                      // Filter recipes based on selected dietary options
+                      _fetchRecipesByDietaryOptions(selectedDietaryOptions);
+                    },
+                    child: Text('Submit'),
+                  ),
+                ),
+              ],
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              contentPadding: EdgeInsets.all(10.0),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _fetchRecipesByDietaryOptions(
+      List<String> dietaryOptions) async {
+    try {
+      String apiUrl =
+          'https://fridgeringapi.fly.dev/recipes/search?userID=${widget.userId}&match=$match';
+
+      // Add selected dietary options to the query
+      if (dietaryOptions.isNotEmpty) {
+        final encodedOptions =
+            Uri.encodeQueryComponent(jsonEncode(dietaryOptions));
+        apiUrl += '&tags=$encodedOptions';
+      }
+
+      final response = await http.get(Uri.parse(apiUrl));
+
+      if (response.statusCode == 200) {
+        // Successfully fetched recipes
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        final List<dynamic> recipeList = data['data'];
+        setState(() {
+          recipes = List<Map<String, dynamic>>.from(recipeList);
+          searchResults = List<Map<String, dynamic>>.from(recipeList);
+        });
+      } else {
+        // Handle errors
+        print('Failed to fetch recipes. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle other errors
+      print('Error: $e');
+    }
+  }
+
+  Widget _buildDietaryOptionCheckbox(
+      String option, List<String> selectedOptions, StateSetter setState) {
+    return Row(
+      children: [
+        Checkbox(
+          value: selectedOptions.contains(option),
+          onChanged: (value) {
+            setState(() {
+              if (value != null && value) {
+                selectedOptions.add(option);
+              } else {
+                selectedOptions.remove(option);
+              }
+            });
+          },
+        ),
+        Text(option),
+      ],
     );
   }
 }

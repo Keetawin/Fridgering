@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class FridgeListItem extends StatelessWidget {
+class IngredientCard extends StatelessWidget {
   final String title;
   final int quantity;
   final String unit;
@@ -10,7 +10,7 @@ class FridgeListItem extends StatelessWidget {
   final Map<String, dynamic> expiredDate;
   final VoidCallback onTap;
 
-  FridgeListItem({
+  IngredientCard({
     required this.title,
     required this.quantity,
     required this.unit,
@@ -30,8 +30,6 @@ class FridgeListItem extends StatelessWidget {
     DateTime currentDate = DateTime.now();
     int daysLeft = expirationDate.difference(currentDate).inDays;
     int period = expirationDate.difference(dateBuyDateTime).inDays;
-
-    double lifePercentage = daysLeft >= 0 ? (daysLeft / period) : 0.0;
     bool isExpired = daysLeft <= 0;
 
     return GestureDetector(

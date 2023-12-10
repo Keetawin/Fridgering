@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import '../ingredient/add.dart';
-import 'package:intl/intl.dart';
 
-class FridgeListItem extends StatelessWidget {
+class IngredientCard extends StatelessWidget {
   final String title;
   final String imageUrl;
   final String ingredientID;
@@ -12,7 +11,7 @@ class FridgeListItem extends StatelessWidget {
   final String? userImage;
   final VoidCallback onTap;
 
-  FridgeListItem({
+  IngredientCard({
     required this.title,
     required this.imageUrl,
     required this.ingredientID,

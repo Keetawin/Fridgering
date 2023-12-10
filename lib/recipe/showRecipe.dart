@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import '../navbar.dart';
 import 'dart:convert';
 
 class Menu extends StatefulWidget {
@@ -145,15 +146,6 @@ class _MenuState extends State<Menu> {
     }
   }
 
-  List<String> cookingSteps = [
-    'Step 1: Prepare the ingredients',
-    'Step 2: Cook the proteins',
-    'Step 3: Saute the vegetables',
-    'Step 4: Make the sauce',
-    'Step 5: Combine and serve'
-    // เพิ่มขั้นตอนตามที่ต้องการ
-  ];
-
   _MenuState({
     required this.recipeID,
     required this.recipeName,
@@ -235,7 +227,7 @@ class _MenuState extends State<Menu> {
                       ),
                     ),
                     Text(
-                      '${quantity != null ? quantity * count : 'Optional'} ${unit}',
+                      '${quantity != null ? '${quantity * count} ${unit}' : 'Optional'}',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -261,71 +253,70 @@ class _MenuState extends State<Menu> {
   Widget buildCookingStepPage(int stepIndex) {
     int totalSteps = widget.recipeInstructions.length;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Cooking Step ${stepIndex + 1}/$totalSteps'),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            if (stepIndex > 0) {
-              // Navigate to the previous cooking step
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => buildCookingStepPage(stepIndex - 1),
-                ),
-              );
-            } else {
-              // Navigate back to the menu if it's the first step
-              Navigator.pop(context);
-            }
-          },
-        ),
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Colors.grey), // Border color
-                        color: Colors.white, // Background color
-                      ),
-                      child: Text(
-                        widget.recipeInstructions[stepIndex],
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.w600),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                  ],
-                ),
-              ),
-              Container(
-                height: 60,
-                margin: EdgeInsets.all(36),
-                width: double.infinity,
-                child: TextButton(
-                  child: Text(
-                    "Next Step",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
+    if (stepIndex < totalSteps) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('Cooking Step ${stepIndex + 1}/$totalSteps'),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              if (stepIndex > 0) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => buildCookingStepPage(stepIndex - 1),
                   ),
-                  onPressed: () {
-                    if (stepIndex < totalSteps - 1) {
-                      // Navigate to the next cooking step
+                );
+              } else {
+                Navigator.pop(context);
+              }
+            },
+          ),
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.grey),
+                          color: Colors.white,
+                        ),
+                        child: Text(
+                          widget.recipeInstructions[stepIndex],
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                    ],
+                  ),
+                ),
+                Container(
+                  height: 60,
+                  margin: EdgeInsets.all(36),
+                  width: double.infinity,
+                  child: TextButton(
+                    child: Text(
+                      "Next Step",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    onPressed: () {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
@@ -333,24 +324,106 @@ class _MenuState extends State<Menu> {
                               buildCookingStepPage(stepIndex + 1),
                         ),
                       );
-                    } else {
-                      // Navigate back to the menu if it's the last step
-                      Navigator.pop(context);
-                    }
-                  },
-                  style: TextButton.styleFrom(
-                    backgroundColor: Theme.of(context).primaryColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+                    },
+                    style: TextButton.styleFrom(
+                      backgroundColor: Theme.of(context).primaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    } else {
+      // This is the last step
+      return Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(16),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.check_circle_rounded, // Checkmark icon
+                              color: Theme.of(context)
+                                  .primaryColor, // Color of the checkmark
+                              size: 80.0, // Size of the checkmark icon
+                            ),
+                            SizedBox(height: 20),
+                            Text(
+                              'Enjoy your meal and savor the happiness it brings.',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                    ],
+                  ),
+                ),
+                Container(
+                  height: 60,
+                  margin: EdgeInsets.all(36),
+                  width: double.infinity,
+                  child: TextButton(
+                    child: Text(
+                      "Let's eat",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Navbar(
+                              userId: widget.userID,
+                              userImage: user[0]['image'],
+                              userName: user[0]['name'],
+                              userEmail: user[0]['email']),
+                        ),
+                      );
+                    },
+                    style: TextButton.styleFrom(
+                      backgroundColor: Theme.of(context).primaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
   }
 
   @override
@@ -438,62 +511,16 @@ class _MenuState extends State<Menu> {
                         ),
                       ),
                       SizedBox(height: 24),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Column(
-                            children: [
-                              Icon(Icons.soup_kitchen_outlined,
-                                  size: 36,
-                                  color: Theme.of(context).primaryColor),
-                              SizedBox(height: 4),
-                              Text(
-                                recipeTags.isNotEmpty
-                                    ? recipeTags[1]
-                                    : 'No Data',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              Icon(Icons.schedule_outlined,
-                                  size: 36,
-                                  color: Theme.of(context).primaryColor),
-                              SizedBox(height: 4),
-                              Text(
-                                '${recipeTime} Min',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              Icon(Icons.local_fire_department_outlined,
-                                  size: 36,
-                                  color: Theme.of(context).primaryColor),
-                              SizedBox(height: 4),
-                              Text(
-                                '300 Kcal',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                        child: Wrap(
+                          spacing: 8,
+                          children: recipeTags
+                              .map((tag) => TagWithBorderRadius(tag))
+                              .toList(),
+                        ),
                       ),
-                      SizedBox(height: 28),
+                      SizedBox(height: 24),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 30.0),
                         child: Row(
@@ -645,5 +672,33 @@ class _MenuState extends State<Menu> {
         ],
       ),
     );
+  }
+}
+
+class TagWithBorderRadius extends StatelessWidget {
+  final String tagText;
+
+  TagWithBorderRadius(this.tagText);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+        padding: EdgeInsets.only(bottom: 8),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColor, // Use the primary color
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Text(
+            tagText.toUpperCase(), // ทำให้ข้อความเป็นตัวพิมพ์ใหญ่ทั้งหมด
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              // Use white font color
+            ),
+          ),
+        ));
   }
 }

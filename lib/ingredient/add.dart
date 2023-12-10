@@ -3,7 +3,7 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
-import '../../home.dart';
+import '../navbar.dart';
 
 class AddPage extends StatefulWidget {
   final String ingredientID;
@@ -24,10 +24,10 @@ class AddPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _IngredientPageState createState() => _IngredientPageState();
+  _AddPageState createState() => _AddPageState();
 }
 
-class _IngredientPageState extends State<AddPage> {
+class _AddPageState extends State<AddPage> {
   bool isPinned = false;
   String expirationDate = 'DD/MM/YYYY';
   String quantityValue = ' ';
@@ -158,7 +158,7 @@ class _IngredientPageState extends State<AddPage> {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => Home(
+                        builder: (context) => Navbar(
                               userId: widget.userId,
                               userImage: widget.userImage,
                               userName: widget.userName,
@@ -345,7 +345,7 @@ class _IngredientPageState extends State<AddPage> {
                                         'Unknown',
                                     style: TextStyle(
                                         fontSize: 18.0,
-                                        color: Colors.black,
+                                        color: Colors.grey,
                                         fontWeight: FontWeight.w500),
                                   ),
                                   SizedBox(height: 22.0),

@@ -2,7 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import './welcome/onboarding.dart';
 import './firebase_options.dart';
-import './home.dart';
+import './navbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -91,7 +91,7 @@ class MyApp extends StatelessWidget {
                 fontFamily: 'Poppins',
                 scaffoldBackgroundColor: Colors.white,
               ),
-              home: Home(
+              home: Navbar(
                 userId: userData['data']['userID'],
                 userImage: userData['data']['image'],
                 userName: userData['data']['name'],

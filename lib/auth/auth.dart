@@ -5,8 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../dietary/dietary.dart';
-
-import '../home.dart';
+import '../navbar.dart';
 
 class Auth extends StatefulWidget {
   @override
@@ -52,7 +51,7 @@ class _AuthState extends State<Auth> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => Home(
+              builder: (context) => Navbar(
                 userId: user.uid,
                 userImage: user.photoURL,
                 userName: responseData['data']['name'],

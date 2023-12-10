@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../recipe/menu2.dart';
+import '../recipe/showRecipe.dart';
 
-class CardItem extends StatefulWidget {
+class RecipeCard extends StatefulWidget {
   final dynamic index;
   final Map<String, dynamic> user;
   final dynamic recipeId;
@@ -13,7 +13,7 @@ class CardItem extends StatefulWidget {
   final VoidCallback onTap;
   final List<dynamic> instruction;
 
-  CardItem({
+  RecipeCard({
     required this.index,
     required this.user,
     required this.recipeId,
@@ -27,16 +27,16 @@ class CardItem extends StatefulWidget {
   });
 
   @override
-  _CardItemState createState() => _CardItemState();
+  _RecipeCardState createState() => _RecipeCardState();
 }
 
-class _CardItemState extends State<CardItem> {
+class _RecipeCardState extends State<RecipeCard> {
   bool isPinned = false;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.user.isNotEmpty) {
         // Check if the current recipeId is in the list of pinnedRecipes
         bool isRecipePinned =

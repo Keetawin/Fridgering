@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../home.dart';
+import '../navbar.dart';
 
 class DietaryPage extends StatefulWidget {
   final String? userId;
@@ -48,7 +48,7 @@ class _DietaryPageState extends State<DietaryPage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => Home(
+            builder: (context) => Navbar(
               userId: widget.userId,
               userImage: widget.userImage,
               userName: widget.userName,
@@ -92,79 +92,79 @@ class _DietaryPageState extends State<DietaryPage> {
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 24.0),
         child: SingleChildScrollView(
-        child: Column(
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Dietary Restrictions',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                ),
-              ],
-            ),
-            SizedBox(height: 8),
-            buildCheckbox("Vegetarian"),
-            buildCheckbox("Vegan"),
-            buildCheckbox("Pescatarian"),
-            buildCheckbox("Flexitarian"),
-            buildCheckbox("Gluten-Free"),
-            buildCheckbox("Lactose-Free"),
-            buildCheckbox("Halal"),
-            buildCheckbox("Low-Carb"),
-            buildCheckbox("High-Protein"),
-            SizedBox(height: 16),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Expire Notification',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                ),
-              ],
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 12.0),
-              child: TextFormField(
-                controller: expireNotificationController,
-                keyboardType: TextInputType.number,
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'^[1-7]$')),
-                  LengthLimitingTextInputFormatter(1),
+          child: Column(
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Dietary Restrictions',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  ),
                 ],
-                decoration: InputDecoration(
-                  labelText: 'Expire Notification (1-7 days)',
-                ),
               ),
-            ),
-
-            SizedBox(height: 16),
-            Container(
-              height: 60,
-              margin: EdgeInsets.symmetric(vertical: 12),
-              width: double.infinity,
-              child: TextButton(
-                child: Text(
-                  "Save",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700),
-                ),
-                onPressed: () {
-                  savePreferences();
-                },
-                style: TextButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+              SizedBox(height: 8),
+              buildCheckbox("Vegetarian"),
+              buildCheckbox("Vegan"),
+              buildCheckbox("Pescatarian"),
+              buildCheckbox("Flexitarian"),
+              buildCheckbox("Gluten-Free"),
+              buildCheckbox("Lactose-Free"),
+              buildCheckbox("Halal"),
+              buildCheckbox("Low-Carb"),
+              buildCheckbox("High-Protein"),
+              SizedBox(height: 16),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Expire Notification',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 12.0),
+                child: TextFormField(
+                  controller: expireNotificationController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'^[1-7]$')),
+                    LengthLimitingTextInputFormatter(1),
+                  ],
+                  decoration: InputDecoration(
+                    labelText: 'Expire Notification (1-7 days)',
                   ),
                 ),
               ),
-            )
-          ],
+              SizedBox(height: 16),
+              Container(
+                height: 60,
+                margin: EdgeInsets.symmetric(vertical: 12),
+                width: double.infinity,
+                child: TextButton(
+                  child: Text(
+                    "Save",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700),
+                  ),
+                  onPressed: () {
+                    savePreferences();
+                  },
+                  style: TextButton.styleFrom(
+                    backgroundColor: Theme.of(context).primaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
-      ),),
+      ),
     );
   }
 
