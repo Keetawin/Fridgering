@@ -1,16 +1,31 @@
-# fridgering
+# Fridgering
 
-A new Flutter project.
+Fridgering is a software that helps you create recipes from the ingredients in your fridge. It also helps you find recipes if you have an idea for a dish but don't know what ingredients to add.
 
-## Getting Started
+##Features
 
-This project is a starting point for a Flutter application.
+Ingredient scanning: Fridgering can scan the barcodes of your ingredients to quickly add them to your library.
+Recipe suggestions: Fridgering suggests recipes based on the ingredients in your library.
+Customization: You can customize your recipe suggestions based on your dietary restrictions, preferences, and budget.
 
-A few resources to get you started if this is your first Flutter project:
+##How to use
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Add your ingredients to your library by scanning their barcodes or manually entering them.
+Fridgering will suggest recipes based on the ingredients in your library.
+Click on a recipe to view the ingredients, instructions, and nutritional information.
+Example
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Let's say you have the following ingredients in your fridge:
+
+- Eggs
+- Milk
+- Flour
+- Sugar
+Fridgering will suggest recipes such as:
+
+- Pancakes
+- Waffles
+- French toast
+- Cake
+You can also use Fridgering to find recipes if you have an idea for a dish but don't know what ingredients to add. For example, if you want to make a chocolate cake, you can simply type "chocolate cake" into the search bar. Fridgering will then suggest recipes that include chocolate cake as an ingredient.
+
